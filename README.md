@@ -1,4 +1,6 @@
-<h2 dir="auto"><span style="text-decoration: underline;"><strong>Garbage card for home assistant</strong></span></h2>
+<div class="markdown-heading" dir="auto">
+<h2 class="heading-element" dir="auto" tabindex="-1"><strong>Garbage card for home assistant</strong></h2>
+<a id="user-content-garbage-card-for-home-assistant" class="anchor" href="https://github.com/Simonz82/ha_garbage/tree/main#garbage-card-for-home-assistant" aria-label="Permalink: Garbage card for home assistant"></a></div>
 <p dir="auto">I wanted to share a card I created to display garbage collection days.</p>
 <p dir="auto">Instructions:</p>
 <ol dir="auto">
@@ -7,6 +9,5 @@
 <li>in the www folder, create a folder with the garbage images inside</li>
 <li>modify the various entities with your personal ones</li>
 </ol>
-<p>&nbsp;</p>
-<p><img src="https://github.com/Simonz82/ha_garbage/blob/main/www/example/example.jpg" alt="garbage card" /></p>
-<p>enjoy!</p>
+<p><img src="https://github.com/Simonz82/ha_garbage/blob/abcdf88e75fdcbdbbc795a421bd31429b692d6e4/example/example.jpg" alt="" /></p>
+<p>Enjoy!</p>
