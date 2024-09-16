@@ -1,7 +1,5 @@
-<div class="markdown-heading" dir="auto">
-<h2 class="heading-element" dir="auto" tabindex="-1"><strong>♻️ Garbage card for home assistant</strong></h2>
-<a id="user-content-garbage-card-for-home-assistant" class="anchor" href="https://github.com/Simonz82/ha_garbage/tree/main#garbage-card-for-home-assistant" aria-label="Permalink: Garbage card for home assistant"></a></div>
-<p dir="auto">I wanted to share a card I created to display garbage collection days.</p>
+<h2><span style="text-decoration: underline;"><strong>♻️ Garbage card for home assistant</strong></span></h2>
+<p>I wanted to share a card I created to display garbage collection days</p>
 <p dir="auto">Instructions:</p>
 <ol dir="auto">
 <li>from Hacs, install:<br />a. hui-element<br />b. button-card</li>
