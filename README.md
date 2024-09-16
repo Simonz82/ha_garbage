@@ -7,3 +7,5 @@ Instructions:
 2. in the HA file sensor.yaml, insert the contents of garbage_sensor.txt
 3. in the www folder, create a folder with the rubbish images inside
 4. modify the various entities with your personal ones
+
+enjoy!
