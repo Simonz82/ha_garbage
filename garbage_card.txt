@@ -1,0 +1,111 @@
+type: entities
+show_header_toggle: 'off'
+style: |
+  .card-header {
+    padding: 0px 0px 0px 0px !important;
+  }
+entities:
+  - type: section
+    label: Raccolta Differenziata ♻️
+  - type: custom:hui-element
+    card_type: vertical-stack
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: picture-entity
+            aspect_ratio: ''
+            entity: sensor.raccoltadifferenziata
+            show_name: false
+            show_state: false
+            style: |
+              ha-card {
+                  --paper-card-background-color: 'rgba(0, 0, 0, 0.0)';
+                  --ha-card-background: "rgba(0, 0, 0, 0.0)";
+                  --ha-card-box-shadow: 'none';
+            state_image:
+              Nulla: /local/rifiuti/Nulla.png
+              Plastica: /local/rifiuti/Plastica.png
+              Vetro: /local/rifiuti/Vetro.png
+              Carta: /local/rifiuti/Carta.png
+              Organico: /local/rifiuti/Organico.png
+              Organico e resto: /local/rifiuti/Organicoeresto.png
+          - type: vertical-stack
+            cards:
+              - type: custom:button-card
+                layout: icon_name_state2nd
+                entity: sensor.giornosettimana
+                name: Oggi è
+                show_icon: true
+                show_state: true
+                icon: mdi:calendar-arrow-right
+                styles:
+                  grid:
+                    - grid-template-columns: 50px auto
+                  icon:
+                    - padding: 0px 0px
+                    - height: 30px
+                    - width: 30px
+                  card:
+                    - '--ha-card-background': rgba(0, 0, 0, 0.0)
+                    - '--ha-card-box-shadow': none
+                  state:
+                    - padding: 0px 10px
+                    - justify-self: start
+                    - font-family: Roboto, sans-serif
+                    - font-size: 15px
+                  name:
+                    - padding: 0px 10px
+                    - justify-self: start
+                    - color: var(--primary-text-color)
+              - type: custom:button-card
+                layout: icon_name_state2nd
+                entity: sensor.raccoltadifferenziata
+                name: Tra ore 20 alle 07
+                show_icon: true
+                show_state: true
+                icon: mdi:recycle
+                styles:
+                  grid:
+                    - grid-template-columns: 50px auto
+                  icon:
+                    - padding: 0px 0px
+                    - height: 30px
+                    - width: 30px
+                  card:
+                    - '--ha-card-background': rgba(0, 0, 0, 0.0)
+                    - '--ha-card-box-shadow': none
+                  state:
+                    - padding: 0px 10px
+                    - justify-self: start
+                    - font-family: Roboto, sans-serif
+                    - font-size: 15px
+                  name:
+                    - padding: 0px 10px
+                    - justify-self: start
+                    - color: var(--primary-text-color)
+              - type: custom:button-card
+                layout: icon_name_state2nd
+                entity: sensor.giornoritiro
+                name: Giorno del ritiro
+                show_icon: true
+                show_state: true
+                icon: mdi:trash-can-outline
+                styles:
+                  grid:
+                    - grid-template-columns: 50px auto
+                  icon:
+                    - padding: 0px 0px
+                    - height: 30px
+                    - width: 30px
+                  card:
+                    - '--ha-card-background': rgba(0, 0, 0, 0.0)
+                    - '--ha-card-box-shadow': none
+                  state:
+                    - padding: 0px 10px
+                    - justify-self: start
+                    - font-family: Roboto, sans-serif
+                    - font-size: 15px
+                  name:
+                    - padding: 0px 10px
+                    - justify-self: start
+                    - color: var(--primary-text-color)

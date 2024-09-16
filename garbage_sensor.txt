@@ -1,0 +1,73 @@
+#RACCOLTA DIFFERENZIATA
+# Da inserire nella sezione sensor:
+# Prodotto da conferire in base al giorno
+# Giorni:
+# 0 = Lunedì, 1 = Martedì, 2 = Mercoledì, ecc...
+# Sostituire il prodotto da conferire in base al giorno della settimana
+- platform: template
+  sensors:
+    raccoltadifferenziata:
+      entity_id: sensor.date
+      friendly_name: "Dalle ore 20 alle 07" #Orario di conferimento
+      value_template: >-
+        {% if now().weekday() == 6 -%}
+          Nulla
+        {%- elif now().weekday() == 0 -%}
+          Organico
+        {%- elif now().weekday() == 1 -%}
+          Plastica
+        {%- elif now().weekday() == 2 -%}
+          Carta
+        {%- elif now().weekday() == 3 -%}
+          Organico e resto
+        {%- elif now().weekday() == 4 -%}
+          Vetro
+        {%- elif now().weekday() == 5 -%}
+          Nulla
+        {%- endif %}
+
+# Giorno della settimana
+- platform: template
+  sensors:
+    giornosettimana:
+      entity_id: sensor.date
+      friendly_name: "Oggi è:"
+      value_template: >-
+        {% if now().weekday() == 0 -%}
+          Lunedì
+        {%- elif now().weekday() == 1 -%}
+          Martedì
+        {%- elif now().weekday() == 2 -%}
+          Mercoledì
+        {%- elif now().weekday() == 3 -%}
+          Giovedì
+        {%- elif now().weekday() == 4 -%}
+          Venerdì
+        {%- elif now().weekday() == 5 -%}
+          Sabato
+        {%- elif now().weekday() == 6 -%}
+          Domenica
+        {%- endif %}
+
+# Giorno del ritiro
+- platform: template
+  sensors:
+    giornoritiro:
+      entity_id: sensor.date
+      friendly_name: "Giorno del ritiro:"
+      value_template: >-
+        {% if now().weekday() == 6 -%}
+          Lunedì
+        {%- elif now().weekday() == 0 -%}
+          Martedì
+        {%- elif now().weekday() == 1 -%}
+          Mercoledì
+        {%- elif now().weekday() == 2 -%}
+          Giovedì
+        {%- elif now().weekday() == 3 -%}
+          Venerdì
+        {%- elif now().weekday() == 4 -%}
+          Sabato
+        {%- elif now().weekday() == 5 -%}
+          Domenica
+        {%- endif %}
