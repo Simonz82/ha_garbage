@@ -23,12 +23,12 @@ entities:
                   --ha-card-background: "rgba(0, 0, 0, 0.0)";
                   --ha-card-box-shadow: 'none';
             state_image:
-              Nulla: /local/rifiuti/Nulla.png
-              Plastica: /local/rifiuti/Plastica.png
-              Vetro: /local/rifiuti/Vetro.png
-              Carta: /local/rifiuti/Carta.png
-              Organico: /local/rifiuti/Organico.png
-              Organico e resto: /local/rifiuti/Organicoeresto.png
+              Nulla: /local/garbage/Nulla.png
+              Plastica: /local/garbage/Plastica.png
+              Vetro: /local/garbage/Vetro.png
+              Carta: /local/garbage/Carta.png
+              Organico: /local/garbage/Organico.png
+              Organico e resto: /local/garbage/Organicoeresto.png
           - type: vertical-stack
             cards:
               - type: custom:button-card
