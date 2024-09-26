@@ -10,3 +10,9 @@
 </ol>
 <p><img src="https://github.com/Simonz82/ha_garbage/blob/abcdf88e75fdcbdbbc795a421bd31429b692d6e4/example/example.jpg" alt="" /></p>
 <p>Enjoy!</p>
+
+if you would like to support the various shares I do please help me with a kind offer:
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C713VTGJ)
+
+
