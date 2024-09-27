@@ -14,11 +14,11 @@
 <p>Enjoy!</p>
 
 ----------------------------------------
-<p>Ti va di darmi una mano?<br />Il contenuto di questa pagina &egrave; completamente gratuito il fine non &egrave; certo guadagnare.<br />Se ti va di darmi una mano per sostenere le spese e il tempo perso, hai le seguenti modalit&agrave;:</p>
-<p>&nbsp;</p>
+<p>Would you like to give me a hand?<br />The content of this page is completely free of charge and the purpose is certainly not to make money.<br />If you would like to lend me a hand to help with expenses and lost time, you have the following ways:</p>
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C713VTGJ)
 
 [![PayPal](https://github.com/Simonz82/desktop-tutorial/blob/main/paypal.svg)](https://www.paypal.com/paypalme/simongmail)
 
-<p><br />Effettua i tuoi acquisti Amazon a partire da <a href="https://amzn.to/3XWWTgz" target="_blank">QUESTO LINK</a><br /><br />Entra nel nostro canale Telegram dedicato alle news su Home Assistant:<br /><a title="Home Assistant News" href="https://t.me/Home_Assistant_News" target="_blank">Home Assistant News</a><br /><br />Entra nel nostro canale Telegram dedicato ai prodotti per la domotica, ci sono moltissime offerte:<br /><a title="offerte_domotica" href="https://t.me/offerte_domotica_ita" target="_blank">Offerte_domotica</a></p>
+<p>Make your Amazon purchases from <a href="https://amzn.to/3XWWTgz" target="_blank">THIS LINK</a><br /><br />Join our Telegram channel dedicated to Home Assistant news:<br /><a title="Home Assistant News" href="https://t.me/Home_Assistant_News" target="_blank">Home Assistant News</a><br /><br />Join our Telegram channel dedicated to home automation products, there are lots of offers:<br /><a title="offerte_domotica" href="https://t.me/offerte_domotica_ita" target="_blank">Offerte_domotica</a></p>
+
