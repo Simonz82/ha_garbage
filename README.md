@@ -20,5 +20,15 @@
 
 [![PayPal](https://github.com/Simonz82/desktop-tutorial/blob/main/paypal.svg)](https://www.paypal.com/paypalme/simongmail)
 
-<p>Make your Amazon purchases from <a href="https://amzn.to/3XWWTgz" target="_blank">THIS LINK</a><br /><br />Join our Telegram channel dedicated to Home Assistant news:<br /><a title="Home Assistant News" href="https://t.me/Home_Assistant_News" target="_blank">Home Assistant News</a><br /><br />Join our Telegram channel dedicated to home automation products, there are lots of offers:<br /><a title="offerte_domotica" href="https://t.me/offerte_domotica_ita" target="_blank">Offerte_domotica</a></p>
+Make your Amazon purchases from this link:
+
+[![Amazon](https://github.com/Simonz82/desktop-tutorial/blob/main/Amazon_logo.jpg)](https://amzn.to/3XWWTgz)
+
+Join our Telegram channel dedicated to Home Assistant news:
+
+[![Home_Assistant_News](https://github.com/Simonz82/desktop-tutorial/blob/main/home_assistant_news.jpg)](https://t.me/Home_Assistant_News)
+
+Join our Telegram channel dedicated to home automation products, there are lots of offers:
+
+[![Offerte Domotica](https://github.com/Simonz82/desktop-tutorial/blob/main/offerte_domotica.jpg)](https://t.me/offerte_domotica_ita)
 
