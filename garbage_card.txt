@@ -1,9 +1,10 @@
 type: entities
-show_header_toggle: 'off'
-style: |
-  .card-header {
-    padding: 0px 0px 0px 0px !important;
-  }
+card_mod:
+  style: |
+    .card-header {
+      padding: 0px 0px 0px 0px !important;
+    }
+show_header_toggle: "off"
 entities:
   - type: section
     label: Raccolta Differenziata ♻️
@@ -13,7 +14,7 @@ entities:
       - type: horizontal-stack
         cards:
           - type: picture-entity
-            aspect_ratio: ''
+            aspect_ratio: 68%
             entity: sensor.raccoltadifferenziata
             show_name: false
             show_state: false
@@ -23,12 +24,12 @@ entities:
                   --ha-card-background: "rgba(0, 0, 0, 0.0)";
                   --ha-card-box-shadow: 'none';
             state_image:
-              Nulla: /local/garbage/Nulla.png
-              Plastica: /local/garbage/Plastica.png
-              Vetro: /local/garbage/Vetro.png
-              Carta: /local/garbage/Carta.png
-              Organico: /local/garbage/Organico.png
-              Organico e resto: /local/garbage/Organicoeresto.png
+              Nulla: /local/rifiuti/Nulla.png
+              Plastica: /local/rifiuti/Plastica.png
+              Vetro: /local/rifiuti/Vetro.png
+              Carta: /local/rifiuti/Carta.png
+              Organico: /local/rifiuti/Organico.png
+              Organico e resto: /local/rifiuti/Organicoeresto.png
           - type: vertical-stack
             cards:
               - type: custom:button-card
@@ -40,22 +41,26 @@ entities:
                 icon: mdi:calendar-arrow-right
                 styles:
                   grid:
-                    - grid-template-columns: 50px auto
+                    - grid-template-columns: 40px auto
                   icon:
                     - padding: 0px 0px
                     - height: 30px
                     - width: 30px
                   card:
-                    - '--ha-card-background': rgba(0, 0, 0, 0.0)
-                    - '--ha-card-box-shadow': none
+                    - "--ha-card-background": rgba(0, 0, 0, 0.0)
+                    - "--ha-card-box-shadow": none
+                    - "--ha-card-border-width": 1px
+                    - height: 43px
+                    - width: 200px
                   state:
                     - padding: 0px 10px
                     - justify-self: start
                     - font-family: Roboto, sans-serif
-                    - font-size: 15px
+                    - font-size: 11px
                   name:
                     - padding: 0px 10px
                     - justify-self: start
+                    - font-size: 13px
                     - color: var(--primary-text-color)
               - type: custom:button-card
                 layout: icon_name_state2nd
@@ -66,22 +71,26 @@ entities:
                 icon: mdi:recycle
                 styles:
                   grid:
-                    - grid-template-columns: 50px auto
+                    - grid-template-columns: 40px auto
                   icon:
                     - padding: 0px 0px
                     - height: 30px
                     - width: 30px
                   card:
-                    - '--ha-card-background': rgba(0, 0, 0, 0.0)
-                    - '--ha-card-box-shadow': none
+                    - "--ha-card-background": rgba(0, 0, 0, 0.0)
+                    - "--ha-card-box-shadow": none
+                    - "--ha-card-border-width": 1px
+                    - height: 43px
+                    - width: 200px
                   state:
                     - padding: 0px 10px
                     - justify-self: start
                     - font-family: Roboto, sans-serif
-                    - font-size: 15px
+                    - font-size: 11px
                   name:
                     - padding: 0px 10px
                     - justify-self: start
+                    - font-size: 13px
                     - color: var(--primary-text-color)
               - type: custom:button-card
                 layout: icon_name_state2nd
@@ -92,20 +101,24 @@ entities:
                 icon: mdi:trash-can-outline
                 styles:
                   grid:
-                    - grid-template-columns: 50px auto
+                    - grid-template-columns: 40px auto
                   icon:
                     - padding: 0px 0px
                     - height: 30px
                     - width: 30px
                   card:
-                    - '--ha-card-background': rgba(0, 0, 0, 0.0)
-                    - '--ha-card-box-shadow': none
+                    - "--ha-card-background": rgba(0, 0, 0, 0.0)
+                    - "--ha-card-box-shadow": none
+                    - "--ha-card-border-width": 1px
+                    - height: 43px
+                    - width: 200px
                   state:
                     - padding: 0px 10px
                     - justify-self: start
                     - font-family: Roboto, sans-serif
-                    - font-size: 15px
+                    - font-size: 11px
                   name:
                     - padding: 0px 10px
                     - justify-self: start
+                    - font-size: 13px
                     - color: var(--primary-text-color)
