@@ -14,7 +14,7 @@ entities:
       - type: horizontal-stack
         cards:
           - type: picture-entity
-            aspect_ratio: 68%
+            aspect_ratio: 70%
             entity: sensor.raccoltadifferenziata
             show_name: false
             show_state: false
@@ -41,7 +41,7 @@ entities:
                 icon: mdi:calendar-arrow-right
                 styles:
                   grid:
-                    - grid-template-columns: 40px auto
+                    - grid-template-columns: 30px auto
                   icon:
                     - padding: 0px 0px
                     - height: 30px
@@ -51,7 +51,7 @@ entities:
                     - "--ha-card-box-shadow": none
                     - "--ha-card-border-width": 1px
                     - height: 43px
-                    - width: 200px
+                    - width: 210px
                   state:
                     - padding: 0px 10px
                     - justify-self: start
@@ -65,13 +65,13 @@ entities:
               - type: custom:button-card
                 layout: icon_name_state2nd
                 entity: sensor.raccoltadifferenziata
-                name: Tra ore 20 alle 07
+                name: Dalle ore 20.00 alle 07.00
                 show_icon: true
                 show_state: true
                 icon: mdi:recycle
                 styles:
                   grid:
-                    - grid-template-columns: 40px auto
+                    - grid-template-columns: 30px auto
                   icon:
                     - padding: 0px 0px
                     - height: 30px
@@ -81,7 +81,7 @@ entities:
                     - "--ha-card-box-shadow": none
                     - "--ha-card-border-width": 1px
                     - height: 43px
-                    - width: 200px
+                    - width: 210px
                   state:
                     - padding: 0px 10px
                     - justify-self: start
@@ -101,7 +101,7 @@ entities:
                 icon: mdi:trash-can-outline
                 styles:
                   grid:
-                    - grid-template-columns: 40px auto
+                    - grid-template-columns: 30px auto
                   icon:
                     - padding: 0px 0px
                     - height: 30px
@@ -111,7 +111,7 @@ entities:
                     - "--ha-card-box-shadow": none
                     - "--ha-card-border-width": 1px
                     - height: 43px
-                    - width: 200px
+                    - width: 210px
                   state:
                     - padding: 0px 10px
                     - justify-self: start
