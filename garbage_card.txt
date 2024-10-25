@@ -51,16 +51,16 @@ entities:
                     - "--ha-card-box-shadow": none
                     - "--ha-card-border-width": 1px
                     - height: 43px
-                    - width: 210px
+                    - width: 190px
                   state:
                     - padding: 0px 10px
                     - justify-self: start
                     - font-family: Roboto, sans-serif
-                    - font-size: 11px
+                    - font-size: 10px
                   name:
                     - padding: 0px 10px
                     - justify-self: start
-                    - font-size: 13px
+                    - font-size: 12px
                     - color: var(--primary-text-color)
               - type: custom:button-card
                 layout: icon_name_state2nd
@@ -81,16 +81,16 @@ entities:
                     - "--ha-card-box-shadow": none
                     - "--ha-card-border-width": 1px
                     - height: 43px
-                    - width: 210px
+                    - width: 190px
                   state:
                     - padding: 0px 10px
                     - justify-self: start
                     - font-family: Roboto, sans-serif
-                    - font-size: 11px
+                    - font-size: 10px
                   name:
                     - padding: 0px 10px
                     - justify-self: start
-                    - font-size: 13px
+                    - font-size: 12px
                     - color: var(--primary-text-color)
               - type: custom:button-card
                 layout: icon_name_state2nd
@@ -111,14 +111,14 @@ entities:
                     - "--ha-card-box-shadow": none
                     - "--ha-card-border-width": 1px
                     - height: 43px
-                    - width: 210px
+                    - width: 190px
                   state:
                     - padding: 0px 10px
                     - justify-self: start
                     - font-family: Roboto, sans-serif
-                    - font-size: 11px
+                    - font-size: 10px
                   name:
                     - padding: 0px 10px
                     - justify-self: start
-                    - font-size: 13px
+                    - font-size: 12px
                     - color: var(--primary-text-color)
