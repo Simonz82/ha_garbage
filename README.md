@@ -11,6 +11,11 @@
 <p><img src="example/example1.jpg" alt="" /></p>
 
 <p><img src="example/example2.jpg" alt="" /></p>
+
+A chi interessa avere delle notifiche è stato creata la stessa card con l'aggiunta di notifiche, la trovate al seguenti link:
+https://github.com/scheccia1/hagarbage
+
+
 <p>Enjoy!</p>
 
 ----------------------------------------
