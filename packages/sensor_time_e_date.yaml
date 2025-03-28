@@ -1,0 +1,90 @@
+homeassistant:
+  customize:
+    package.node_anchors:
+      customize: &customize
+        package: "Sensor Time & Date"
+        author: "Simonz82"
+        reference: "prova"
+
+    ####################################################
+    #                                                  #
+    #                    SENSORI                       #
+    #                                                  #
+    ####################################################
+
+sensor:
+  - platform: time_date
+    display_options:
+      - "time"
+      - "date"
+      - "date_time"
+      - "date_time_utc"
+      - "date_time_iso"
+      - "time_date"
+      - "time_utc"
+
+  ####################################################
+
+  #sensors.giornosettimana è dentro a differenziata e comunica Lunedì, Martedì ...
+
+  ####################################################
+
+  # esempio: venerdì 28 marzo 2025
+
+  - platform: template
+    sensors:
+      data_italiana:
+        value_template: >
+          {%- set date = as_timestamp(now())-%}
+          {% set giorno = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"] %}
+          {% set mese = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"] %}
+          {% set m_ok = date | timestamp_custom("%m") | int %}
+          {% set g_ok = date | timestamp_custom("%w") | int %}
+          {{giorno[g_ok] + ' ' + date | timestamp_custom("%d") + ' ' + mese[m_ok - 1] + ' ' +date| timestamp_custom("%Y")}}
+
+  ####################################################
+
+  # esempio 28 Marzo 2025
+
+  - platform: template
+    sensors:
+      data_ita_g_m_a:
+        value_template: >
+          {%- set date = as_timestamp(now())-%}
+          {% set mese = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"] %}
+          {% set m_ok = date | timestamp_custom("%m") | int %}
+          {{date | timestamp_custom("%d") + ' ' + mese[m_ok - 1] + ' ' +date| timestamp_custom("%Y")}}
+
+  ####################################################
+
+  # esempio 28 Marzo
+
+  - platform: template
+    sensors:
+      data_ita_gg_mmmm:
+        value_template: >
+          {%- set date = as_timestamp(now())-%}
+          {% set mese = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"] %}
+          {% set m_ok = date | timestamp_custom("%m") | int %}
+          {{date | timestamp_custom("%d") + ' ' + mese[m_ok - 1]}}
+
+  ####################################################
+  # esempio 28 Marzo
+
+  - platform: template
+    sensors:
+      mesi_italia:
+        value_template: >
+          {{ ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"][now().month-1] }}
+
+  ####################################################
+
+  # esempio il numero della settimana dell'anno
+
+  - platform: template
+    sensors:
+      numero_settimana:
+        value_template: >
+          {{ now().strftime("%W") }}
+
+####################################################

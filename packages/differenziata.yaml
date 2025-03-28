@@ -1,0 +1,363 @@
+##################################################################
+# Package Raccolta Differenziata                                 #
+# Autore: Simonz82                                               #
+#   con delle basu di Saverio Gravagnola e Agostino Pistaso      #
+# Sito per spunti:   http://domoticamente.it  e                  #
+#   https://github.com/scheccia1/hagarbage                       #
+# Card by: Simonz82                                              #
+##################################################################
+
+homeassistant:
+  time_zone: Europe/Rome
+  customize:
+    package.node_anchors:
+      customize: &customize
+        package: "Raccolta Differenziata"
+        author: "Simonz82, Saverio Gravagnola, Agostino Pitasi"
+        reference: "WebSite: www.domoticamente.it, https://github.com/Simonz82/ha_garbage, https://github.com/scheccia1/hagarbage"
+
+      ########################
+      # IMPOSTAZIONI PACKAGE #
+      ########################
+      setting:
+        Media Player Alexa: &alexa media_player.alexa_salone #vostro alexa che comunicherà il mesaggio (anche se dopo nella card potete modificare tramite l'elenco che vi predisponete alla riga: 196)
+
+        Device per notifica push 1: &push1 mobile_app_pippo #vostro smartphone
+        Device per notifica push 2: &push2 entita_smartphone_2
+        Device per notifica push 3: &push3 entita_smartphone_3
+        Device per notifica push 4: &push4 entita_smartphone_4
+        Device per notifica push 5: &push5 entita_smartphone_5
+        Rifiuto 1: &rifiuto1 "♻ Indifferenziato"
+        Rifiuto 2: &rifiuto2 "🍌 Organico"
+        Rifiuto 3: &rifiuto3 "🔪 Organico e Resto"
+        Rifiuto 4: &rifiuto4 "🥡 Carta"
+        Rifiuto 5: &rifiuto5 "🍶 Vetro"
+        Rifiuto 6: &rifiuto6 "🥛 Plastica"
+        Rifiuto 7: &rifiuto7 "🤷‍Nulla" #non modificare
+
+########################################################################################################################
+#                                                     ATTENZIONE!                                                      #
+#                  NON MODIFICARE AL DI SOTTO DI QUESTE RIGHE SE NON SI È SICURI DI QUELLO CHE SI FA.                  #
+#                 I PARAMETRI DA CONFIGURARE PER IL CORRETTO FUNZIONAMENTO SONO SOLO QUELLI QUI SOPRA.                 #
+########################################################################################################################
+
+###########
+# BOOLEAN #
+###########
+input_boolean:
+  # RACCOLTA DIFFERENZIATA DA NOTIFICARE
+  raccolta_differenziata_da_notificare:
+    name: Raccolta differenziata da notificare
+    icon: mdi:bell
+
+##########
+# NUMBER #
+##########
+input_number:
+  # FREQUENZA NOTIFICHE
+  frequenza_notifiche_raccolta_differenziata:
+    name: Frequenza notifiche raccolta differenziata
+    min: 5
+    max: 60
+    step: 5
+    unit_of_measurement: "min"
+    icon: mdi:timer-sync
+    # VOLUME ALEXA
+  volume_alexa_notifica:
+    name: Volume notifica Alexa
+    min: 0
+    max: 1
+    step: 0.1
+    unit_of_measurement: ""
+    icon: mdi:volume-high
+  # RITARDO DOPO NOTIFICA
+  ritardo_dopo_notifica_alexa:
+    name: Alexa torna a Vol dopo
+    min: 5
+    max: 30
+    step: 1
+    unit_of_measurement: "sec"
+    icon: mdi:timer
+  # VOLUME DI RIPRISTINO ALEXA
+  volume_ripristino_alexa:
+    name: Volume ripristino Alexa
+    min: 0
+    max: 1
+    step: 0.1
+    unit_of_measurement: ""
+    icon: mdi:volume-low
+    initial: 0.1 # Valore iniziale a 10%
+
+############
+# DATETIME #
+############
+input_datetime:
+  # START NOTIFICHE
+  raccolta_differenziata_notifiche_start_time:
+    name: Inizio notifiche raccolta differenziata
+    has_time: true
+    has_date: false
+    icon: mdi:timer-music
+  # END NOTIFICHE
+  raccolta_differenziata_notifiche_end_time:
+    name: Fine notifiche raccolta differenziata
+    has_time: true
+    has_date: false
+    icon: mdi:timer-off
+
+##########
+# SELECT #
+##########
+input_select:
+  # GIORNI RACCOLTA DIFFERENZIATA
+  raccolta_differenziata_lun:
+    name: Rifiuto raccolto il Martedì
+    icon: mdi:delete-empty
+    options:
+      - *rifiuto1
+      - *rifiuto2
+      - *rifiuto3
+      - *rifiuto4
+      - *rifiuto5
+      - *rifiuto6
+      - *rifiuto7
+  raccolta_differenziata_mar:
+    name: Rifiuto raccolto il Mercoledì
+    icon: mdi:delete-empty
+    options:
+      - *rifiuto1
+      - *rifiuto2
+      - *rifiuto3
+      - *rifiuto4
+      - *rifiuto5
+      - *rifiuto6
+      - *rifiuto7
+  raccolta_differenziata_mer:
+    name: Rifiuto raccolto il Giovedì
+    icon: mdi:delete-empty
+    options:
+      - *rifiuto1
+      - *rifiuto2
+      - *rifiuto3
+      - *rifiuto4
+      - *rifiuto5
+      - *rifiuto6
+      - *rifiuto7
+  raccolta_differenziata_gio:
+    name: Rifiuto raccolto il Venerdì
+    icon: mdi:delete-empty
+    options:
+      - *rifiuto1
+      - *rifiuto2
+      - *rifiuto3
+      - *rifiuto4
+      - *rifiuto5
+      - *rifiuto6
+      - *rifiuto7
+  raccolta_differenziata_ven:
+    name: Rifiuto raccolto il Sabato
+    icon: mdi:delete-empty
+    options:
+      - *rifiuto1
+      - *rifiuto2
+      - *rifiuto3
+      - *rifiuto4
+      - *rifiuto5
+      - *rifiuto6
+      - *rifiuto7
+  raccolta_differenziata_sab:
+    name: Rifiuto raccolto il Domenica
+    icon: mdi:delete-empty
+    options:
+      - *rifiuto1
+      - *rifiuto2
+      - *rifiuto3
+      - *rifiuto4
+      - *rifiuto5
+      - *rifiuto6
+      - *rifiuto7
+  raccolta_differenziata_dom:
+    name: Rifiuto raccolto Lunedì
+    icon: mdi:delete-empty
+    options:
+      - *rifiuto1
+      - *rifiuto2
+      - *rifiuto3
+      - *rifiuto4
+      - *rifiuto5
+      - *rifiuto6
+      - *rifiuto7
+
+  # SELEZIONE DISPOSITIVI ALEXA
+  alexa_notifica_dispositivi:
+    name: Dispositivi Alexa per notifica
+    icon: mdi:amazon-alexa
+    options:
+      - media_player.alexa_salone
+      - media_player.alexa_cucina
+      - media_player.alexa_cameretta
+      - media_player.alexa_camera # Aggiungi qui tutti i tuoi dispositivi Alexa
+
+###########
+# SENSORI #
+###########
+sensor:
+  - platform: template
+    sensors:
+      # GIORNO DELLA SETTIMANA
+      giorno_della_settimana:
+        friendly_name: "Giorno della settimana"
+        value_template: >
+          {{ ['lun','mar','mer','gio','ven','sab','dom'][now().weekday()] }}
+        icon_template: >-
+          mdi:{{['emoticon-dead-outline', 'emoticon-angry-outline', 'emoticon-sad-outline','emoticon-neutral-outline','emoticon-cool-outline','emoticon-excited-outline','emoticon-happy-outline'][now().weekday()] }}
+      # NOME DELL'INPUT DEL GIORNO DELLA SETTIMANA
+      input_giorno_settimana_rifiuti:
+        value_template: >
+          {{ "raccolta_differenziata_" + states.sensor.giorno_della_settimana.state }}
+
+  #RACCOLTA DIFFERENZIATA
+  # Prodotto da conferire in base al giorno
+  - platform: template
+    sensors:
+      raccoltadifferenziata:
+        entity_id: sensor.date
+        friendly_name: "Orario di conferimento"
+        value_template: >-
+          {{ states("input_select.raccolta_differenziata_" + states.sensor.giorno_della_settimana.state)[2:] }}
+
+  # Giorno della settimana
+  - platform: template
+    sensors:
+      giornosettimana:
+        entity_id: sensor.date
+        friendly_name: "Oggi è:"
+        value_template: >-
+          {% if now().weekday() == 0 -%}
+            Lunedì
+          {%- elif now().weekday() == 1 -%}
+            Martedì
+          {%- elif now().weekday() == 2 -%}
+            Mercoledì
+          {%- elif now().weekday() == 3 -%}
+            Giovedì
+          {%- elif now().weekday() == 4 -%}
+            Venerdì
+          {%- elif now().weekday() == 5 -%}
+            Sabato
+          {%- elif now().weekday() == 6 -%}
+            Domenica
+          {%- endif %}
+
+  # Giorno del ritiro
+  - platform: template
+    sensors:
+      giornoritiro:
+        entity_id: sensor.date
+        friendly_name: "Giorno del ritiro:"
+        value_template: >-
+          {% if now().weekday() == 6 -%}
+            Lunedì
+          {%- elif now().weekday() == 0 -%}
+            Martedì
+          {%- elif now().weekday() == 1 -%}
+            Mercoledì
+          {%- elif now().weekday() == 2 -%}
+            Giovedì
+          {%- elif now().weekday() == 3 -%}
+            Venerdì
+          {%- elif now().weekday() == 4 -%}
+            Sabato
+          {%- elif now().weekday() == 5 -%}
+            Domenica
+          {%- endif %}
+
+#FINE RACCOLTA DIFFERENZIATA
+####################
+# NOTIFICHE GRUPPO #
+####################
+notify:
+  - name: Raccolta Differenziata Gruppo Notifiche App
+    platform: group
+    services:
+      - service: *push1
+      - service: *push2
+      - service: *push3
+      - service: *push4
+      - service: *push5
+
+###############
+# AUTOMAZIONI #
+###############
+automation:
+  # ATTIVA DA NOTIFICARE QUANDO ORARIO DI INIZIO NOTIFICHE
+  - alias: Attiva da notificare raccolta differenziata
+    id: Attiva da notificare raccolta differenziata
+    mode: single
+    trigger:
+      - platform: time
+        at: "04:59:00"
+    action:
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.raccolta_differenziata_da_notificare
+  # DISATTIVA DA NOTIFICARE QUANDO ORARIO DI FINE NOTIFICHE
+  - alias: Disattiva da notificare raccolta differenziata
+    id: Disattiva da notificare raccolta differenziata
+    mode: single
+    trigger:
+      - platform: time
+        at: input_datetime.raccolta_differenziata_notifiche_end_time
+    action:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.raccolta_differenziata_da_notificare
+    automation:
+  # ... altre automazioni del package ...
+  # RICORDA RACCOLTA DIFFERENZIATA
+  - alias: Ricorda raccolta differenziata
+    id: Ricorda raccolta differenziata
+    mode: single
+    trigger:
+      - platform: template
+        value_template: "{{ (now().minute % states('input_number.frequenza_notifiche_raccolta_differenziata')|int(2) == 0) and (states('input_select.raccolta_differenziata_' + states.sensor.giorno_della_settimana.state)[2:] != 'Nulla') }}"
+    condition:
+      - condition: state
+        entity_id: input_boolean.raccolta_differenziata_da_notificare
+        state: "on"
+      - condition: time
+        after: input_datetime.raccolta_differenziata_notifiche_start_time
+        before: input_datetime.raccolta_differenziata_notifiche_end_time
+    action:
+      - service: notify.raccolta_differenziata_gruppo_notifiche_app
+        continue_on_error: true
+        data:
+          title: 🚮 Ricordati di buttare l'immondizia
+          message: >-
+            {{ states("input_select.raccolta_differenziata_" + states.sensor.giorno_della_settimana.state) }}
+      # Imposta il volume per i dispositivi selezionati
+      - service: media_player.volume_set
+        target:
+          entity_id: "{{ states('input_select.alexa_notifica_dispositivi') }}"
+        data:
+          volume_level: "{{ states('input_number.volume_alexa_notifica') | float }}"
+      - delay:
+          seconds: 2 # Ritardo fisso prima della notifica
+      # Invia la notifica ai dispositivi selezionati
+      - service: notify.alexa_media
+        continue_on_error: true
+        data:
+          target: "{{ states('input_select.alexa_notifica_dispositivi') }}"
+          data:
+            type: announce
+            method: spoken
+          message: >-
+            Ricordati di buttare l'immondizia. Oggi si butta {{ states("input_select.raccolta_differenziata_" + states.sensor.giorno_della_settimana.state)[2:] }}
+      - delay:
+          seconds: "{{ states('input_number.ritardo_dopo_notifica_alexa') | int }}"
+      # Ripristina il volume per i dispositivi selezionati
+      - service: media_player.volume_set
+        target:
+          entity_id: "{{ states('input_select.alexa_notifica_dispositivi') }}"
+        data:
+          volume_level: "{{ states('input_number.volume_ripristino_alexa') | float }}"
