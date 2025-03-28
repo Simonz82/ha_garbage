@@ -13,7 +13,7 @@
 </ol>
 <p><img src="example/example1.jpg" alt="" /></p>
 <p><img src="example/example2.jpg" alt="" /></p>
-<p><img src="example/example2.jpg" alt="" /></p>
+<p><img src="example/example3.jpg" alt="" /></p>
 
 A chi interessa avere la card con per la raccolta bisettimanale, la trovate al seguente link, ma non avrà le nuove modifiche che ho apportato:
 https://github.com/scheccia1/hagarbage
