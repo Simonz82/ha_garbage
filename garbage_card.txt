@@ -24,12 +24,44 @@ entities:
                   --ha-card-background: "rgba(0, 0, 0, 0.0)";
                   --ha-card-box-shadow: 'none';
             state_image:
-              Nulla: /local/rifiuti/Nulla.png
-              Plastica: /local/rifiuti/Plastica.png
-              Vetro: /local/rifiuti/Vetro.png
-              Carta: /local/rifiuti/Carta.png
+              Indifferenziata: /local/rifiuti/indifferenziata.png
               Organico: /local/rifiuti/Organico.png
               Organico e resto: /local/rifiuti/Organicoeresto.png
+              Carta: /local/rifiuti/Carta.png
+              Vetro: /local/rifiuti/Vetro.png
+              Plastica: /local/rifiuti/Plastica.png
+              Nulla: /local/rifiuti/Nulla.png
+            tap_action:
+              action: fire-dom-event
+              browser_mod:
+                service: browser_mod.popup
+                data:
+                  title: Impostazioni
+                  style: |
+                    --popup-background-color: var(--secondary-background-color);
+                    --dialog-backdrop-filter: blur(2em) brightness(0.75);
+                  content:
+                    type: entities
+                    entities:
+                      - entity: input_boolean.raccolta_differenziata_da_notificare
+                      - entity: input_select.alexa_notifica_dispositivi
+                      - entity: sensor.giorno_della_settimana
+                      - entity: >-
+                          input_datetime.raccolta_differenziata_notifiche_start_time
+                      - entity: >-
+                          input_datetime.raccolta_differenziata_notifiche_end_time
+                      - entity: >-
+                          input_number.frequenza_notifiche_raccolta_differenziata
+                      - entity: input_number.volume_alexa_notifica
+                      - entity: input_number.ritardo_dopo_notifica_alexa
+                      - entity: input_number.volume_ripristino_alexa
+                      - entity: input_select.raccolta_differenziata_lun
+                      - entity: input_select.raccolta_differenziata_mar
+                      - entity: input_select.raccolta_differenziata_mer
+                      - entity: input_select.raccolta_differenziata_gio
+                      - entity: input_select.raccolta_differenziata_ven
+                      - entity: input_select.raccolta_differenziata_sab
+                      - entity: input_select.raccolta_differenziata_dom
           - type: vertical-stack
             cards:
               - type: custom:button-card
@@ -50,8 +82,6 @@ entities:
                     - "--ha-card-background": rgba(0, 0, 0, 0.0)
                     - "--ha-card-box-shadow": none
                     - "--ha-card-border-width": 1px
-                    - height: 43px
-                    - width: 190px
                   state:
                     - padding: 0px 10px
                     - justify-self: start
@@ -65,7 +95,12 @@ entities:
               - type: custom:button-card
                 layout: icon_name_state2nd
                 entity: sensor.raccoltadifferenziata
-                name: Dalle ore 20.00 alle 07.00
+                name: >-
+                  [[[ return "Esporre dalle: " +
+                  (states["input_datetime.raccolta_differenziata_notifiche_start_time"].state.split(":")[0]
+                  + ":" +
+                  states["input_datetime.raccolta_differenziata_notifiche_start_time"].state.split(":")[1]);
+                  ]]]
                 show_icon: true
                 show_state: true
                 icon: mdi:recycle
@@ -80,8 +115,6 @@ entities:
                     - "--ha-card-background": rgba(0, 0, 0, 0.0)
                     - "--ha-card-box-shadow": none
                     - "--ha-card-border-width": 1px
-                    - height: 43px
-                    - width: 190px
                   state:
                     - padding: 0px 10px
                     - justify-self: start
@@ -110,8 +143,6 @@ entities:
                     - "--ha-card-background": rgba(0, 0, 0, 0.0)
                     - "--ha-card-box-shadow": none
                     - "--ha-card-border-width": 1px
-                    - height: 43px
-                    - width: 190px
                   state:
                     - padding: 0px 10px
                     - justify-self: start
