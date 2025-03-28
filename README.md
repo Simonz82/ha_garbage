@@ -9,7 +9,7 @@
 <li>nella cartella www, crea una cartella con le immagini dei rifiuti all'interno</li>
 <li>verifica nella card che tra la riga 27 e 33 i percorsi delle immagini che stai usando sia corretti</li>
 <li>ora la card funziona, ti resta che clicka sull'immagine del riufiuto per configurarla</li>
-<li>il plus che ho modificato è che puoi impostare un volume per la notifica di alexa e poi riportare il volume della notifa basso (per me fondamentale), il ritardo deve essere maggiore di 12 se il messaggio riprodotto è più lungo </li>
+<li>il plus che ho aggiunto è il poter impostare un volume per la notifica di alexa e poi riportare il volume di alexa a un valore diverso (per me fondamentale tenerlo basso, ma per notifiche alzarlo), il ritardo deve essere maggiore di 12 secondi se il messaggio riprodotto è più lungo </li>
 </ol>
 <p><img src="example/example1.jpg" alt="" /></p>
 <p><img src="example/example2.jpg" alt="" /></p>
