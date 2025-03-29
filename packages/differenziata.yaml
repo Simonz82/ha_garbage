@@ -111,7 +111,7 @@ input_datetime:
 input_select:
   # GIORNI RACCOLTA DIFFERENZIATA
   raccolta_differenziata_lun:
-    name: Rifiuto raccolto il Martedì
+    name: Rifiuto raccolto Martedì
     icon: mdi:delete-empty
     options:
       - *rifiuto1
@@ -122,7 +122,7 @@ input_select:
       - *rifiuto6
       - *rifiuto7
   raccolta_differenziata_mar:
-    name: Rifiuto raccolto il Mercoledì
+    name: Rifiuto raccolto Mercoledì
     icon: mdi:delete-empty
     options:
       - *rifiuto1
@@ -133,7 +133,7 @@ input_select:
       - *rifiuto6
       - *rifiuto7
   raccolta_differenziata_mer:
-    name: Rifiuto raccolto il Giovedì
+    name: Rifiuto raccolto Giovedì
     icon: mdi:delete-empty
     options:
       - *rifiuto1
@@ -144,7 +144,7 @@ input_select:
       - *rifiuto6
       - *rifiuto7
   raccolta_differenziata_gio:
-    name: Rifiuto raccolto il Venerdì
+    name: Rifiuto raccolto Venerdì
     icon: mdi:delete-empty
     options:
       - *rifiuto1
@@ -155,7 +155,7 @@ input_select:
       - *rifiuto6
       - *rifiuto7
   raccolta_differenziata_ven:
-    name: Rifiuto raccolto il Sabato
+    name: Rifiuto raccolto Sabato
     icon: mdi:delete-empty
     options:
       - *rifiuto1
@@ -166,7 +166,7 @@ input_select:
       - *rifiuto6
       - *rifiuto7
   raccolta_differenziata_sab:
-    name: Rifiuto raccolto il Domenica
+    name: Rifiuto raccolto Domenica
     icon: mdi:delete-empty
     options:
       - *rifiuto1

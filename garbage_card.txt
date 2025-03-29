@@ -25,12 +25,12 @@ entities:
                   --ha-card-box-shadow: 'none';
             state_image:
               Indifferenziata: /local/rifiuti/indifferenziata.png
-              Organico: /local/rifiuti/Organico.png
-              Organico e resto: /local/rifiuti/Organicoeresto.png
-              Carta: /local/rifiuti/Carta.png
-              Vetro: /local/rifiuti/Vetro.png
-              Plastica: /local/rifiuti/Plastica.png
-              Nulla: /local/rifiuti/Nulla.png
+              Organico: /local/rifiuti/organico.png
+              Organico e resto: /local/rifiuti/organicoeresto.png
+              Carta: /local/rifiuti/carta.png
+              Vetro: /local/rifiuti/vetro.png
+              Plastica: /local/rifiuti/plastica.png
+              Nulla: /local/rifiuti/nulla.png
             tap_action:
               action: fire-dom-event
               browser_mod:
