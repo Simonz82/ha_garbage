@@ -1,0 +1,147 @@
+####################################################
+#                                                  #
+#   Centro Notifiche Alexa - script condiviso per  #
+#   annunci vocali (elettrodomestici, raccolta     #
+#   differenziata, futuri usi). Centralizza qui     #
+#   volume/ritardo/dispositivi invece di duplicarli #
+#   in ogni card - una sola modifica si applica a   #
+#   tutti gli usi. Aggiunto 01/09/2026.             #
+#                                                  #
+#   NOTA: le finestre orarie (quando e' permesso    #
+#   annunciare) restano per-card (gli helper         #
+#   input_datetime.orario_inizio/fine_notifiche_    #
+#   elettrodomestici_N gia' esistenti), perche' non  #
+#   sono identiche tra tutte le card (es. TV e forno #
+#   non hanno restrizioni orarie, gli altri si) -    #
+#   quindi non centralizzate qui. La raccolta        #
+#   differenziata mantiene i propri helper di        #
+#   volume/ritardo (gia' esistenti in differenziata. #
+#   yaml, valori diversi da quelli degli             #
+#   elettrodomestici) passandoli come parametri allo #
+#   script invece di duplicare la logica.            #
+#                                                  #
+####################################################
+
+input_datetime:
+  orario_inizio_notifiche_alexa:
+    name: "Notifiche Alexa Elettrodomestici - Orario Inizio"
+    icon: mdi:clock-start
+    has_time: true
+    has_date: false
+
+  orario_fine_notifiche_alexa:
+    name: "Notifiche Alexa Elettrodomestici - Orario Fine"
+    icon: mdi:clock-end
+    has_time: true
+    has_date: false
+
+input_number:
+  volume_alexa_notifica_elettrodomestici:
+    name: "Notifiche Alexa Elettrodomestici - Volume Annuncio"
+    icon: mdi:volume-high
+    min: 0
+    max: 1
+    step: 0.01
+    initial: 0.5
+
+  volume_alexa_ripristino_elettrodomestici:
+    name: "Notifiche Alexa Elettrodomestici - Volume Ripristino"
+    icon: mdi:volume-medium
+    min: 0
+    max: 1
+    step: 0.01
+    initial: 0.1
+
+  ritardo_dopo_notifica_alexa_elettrodomestici:
+    name: "Notifiche Alexa Elettrodomestici - Ritardo Prima del Ripristino Volume"
+    icon: mdi:timer-outline
+    min: 0
+    max: 30
+    step: 1
+    initial: 12
+
+script:
+  notifica_vocale_alexa:
+    alias: "Centro Notifiche - Annuncio Vocale Alexa"
+    description: >-
+      Script condiviso per annunci vocali Alexa: alza il volume, annuncia il
+      messaggio, aspetta, poi ripristina il volume. Usato da tutte le card
+      elettrodomestici e dalla raccolta differenziata. Volume/ritardo/target
+      di default vengono dagli helper "elettrodomestici" di questo package,
+      ma ogni chiamata puo' passare i propri valori se deve differire (es.
+      raccolta differenziata usa un volume e un dispositivo diversi).
+    fields:
+      messaggio:
+        name: Messaggio
+        description: Testo da annunciare su Alexa
+        required: true
+        selector:
+          text:
+      target:
+        name: Dispositivi Alexa (opzionale)
+        description: >-
+          Lista di media_player Alexa a cui annunciare. Se omesso, usa
+          media_player.alexa_salone (il dispositivo predefinito degli
+          elettrodomestici).
+        required: false
+        default:
+          - media_player.alexa_salone
+        selector:
+          entity:
+            domain: media_player
+            multiple: true
+      volume_notifica:
+        name: Volume Annuncio (opzionale)
+        description: Se omesso usa input_number.volume_alexa_notifica_elettrodomestici
+        required: false
+        selector:
+          number:
+            min: 0
+            max: 1
+            step: 0.01
+      volume_ripristino:
+        name: Volume Ripristino (opzionale)
+        description: Se omesso usa input_number.volume_alexa_ripristino_elettrodomestici
+        required: false
+        selector:
+          number:
+            min: 0
+            max: 1
+            step: 0.01
+      ritardo:
+        name: Ritardo Prima del Ripristino in secondi (opzionale)
+        description: Se omesso usa input_number.ritardo_dopo_notifica_alexa_elettrodomestici
+        required: false
+        selector:
+          number:
+            min: 0
+            max: 60
+            step: 1
+    sequence:
+      - variables:
+          target_effettivo: "{{ target | default(['media_player.alexa_salone'], true) }}"
+      - service: media_player.volume_set
+        target:
+          entity_id: "{{ target_effettivo }}"
+        data:
+          volume_level: >-
+            {{ volume_notifica | default(states('input_number.volume_alexa_notifica_elettrodomestici') | float(0.5), true) | float(0.5) }}
+      - delay:
+          seconds: 2
+      - service: notify.alexa_media
+        continue_on_error: true
+        data:
+          target: "{{ target_effettivo }}"
+          data:
+            type: announce
+            method: spoken
+          message: "{{ messaggio }}"
+      - delay:
+          seconds: >-
+            {{ ritardo | default(states('input_number.ritardo_dopo_notifica_alexa_elettrodomestici') | int(12), true) | int(12) }}
+      - service: media_player.volume_set
+        target:
+          entity_id: "{{ target_effettivo }}"
+        data:
+          volume_level: >-
+            {{ volume_ripristino | default(states('input_number.volume_alexa_ripristino_elettrodomestici') | float(0.1), true) | float(0.1) }}
