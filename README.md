@@ -4,6 +4,8 @@ Card e package per Home Assistant che gestiscono i giorni della raccolta differe
 
 Progetto storico ripreso da una card più vecchia che avevo condiviso tempo fa (con basi di Saverio Gravagnola e Agostino Pitasi — altri spunti su [domoticamente.it](http://domoticamente.it) e su [scheccia1/hagarbage](https://github.com/scheccia1/hagarbage)). Riscritto da zero il 18/09/2026: nuova card in stile "DashboardModern" (la stessa famiglia grafica delle mie altre card pubbliche), package YAML pulito e senza duplicazioni, immagini dei rifiuti ritagliate e rese più nitide.
 
+Questa card fa parte della stessa famiglia grafica "DashboardModern" delle mie altre card pubbliche (elettrodomestici, energia, FritzBox, server HA, NAS, Proxmox, UPS) raccolte tutte insieme, con lo stesso stile visivo, nel repo **[smart-home-cards](https://github.com/Simonz82/smart-home-cards)**.
+
 ## Anteprima
 
 **La card:**
