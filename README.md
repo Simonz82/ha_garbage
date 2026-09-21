@@ -2,9 +2,9 @@
 
 Card e package per Home Assistant che gestiscono i giorni della raccolta differenziata: mostra un'immagine diversa in base al rifiuto del giorno, il giorno del ritiro, l'orario in cui esporre i bidoni, e manda un promemoria (notifica push + annuncio vocale su Alexa) finché non lo disattivi.
 
-Progetto storico ripreso da una card più vecchia che avevo condiviso tempo fa (con basi di Saverio Gravagnola e Agostino Pitasi — altri spunti su [domoticamente.it](http://domoticamente.it) e su [scheccia1/hagarbage](https://github.com/scheccia1/hagarbage)). Riscritto da zero il 18/09/2026: nuova card in stile "DashboardModern" (la stessa famiglia grafica delle mie altre card pubbliche), package YAML pulito e senza duplicazioni, immagini dei rifiuti ritagliate e rese più nitide.
+Progetto storico ripreso da una card più vecchia che avevo condiviso tempo fa (con basi di Saverio Gravagnola e Agostino Pitasi — altri spunti su [domoticamente.it](http://domoticamente.it) e su [scheccia1/hagarbage](https://github.com/scheccia1/hagarbage)). Riscritto da zero il 18/09/2026: nuova card personalizzata (lo stesso stile visivo delle mie altre card pubbliche), package YAML pulito e senza duplicazioni, immagini dei rifiuti ritagliate e rese più nitide.
 
-Questa card fa parte della stessa famiglia grafica "DashboardModern" delle mie altre card pubbliche (elettrodomestici, energia, FritzBox, server HA, NAS, Proxmox, UPS) raccolte tutte insieme, con lo stesso stile visivo, nel repo **[smart-home-cards](https://github.com/Simonz82/smart-home-cards)**.
+Questa card fa parte delle mie card pubbliche per Home Assistant (elettrodomestici, energia, FritzBox, server HA, NAS, Proxmox, UPS), raccolte tutte insieme, con lo stesso stile visivo, nel repo **[smart-home-cards](https://github.com/Simonz82/smart-home-cards)**.
 
 ## Anteprima
 
@@ -27,6 +27,29 @@ Questa card fa parte della stessa famiglia grafica "DashboardModern" delle mie a
 - L'ingranaggio in alto a destra apre le impostazioni per assegnare un rifiuto ad ogni giorno della settimana.
 - Il megafono (opzionale) è pensato per chi vuole centralizzare in un'unica pagina le impostazioni di volume/orario degli annunci Alexa condivise fra più card (vedi sezione "Notifiche Alexa condivise" più sotto) — se non ti serve, semplicemente non lo configuri e non compare.
 
+## 🎛️ Layout classico o centrato
+
+La card si può mostrare in **due layout**, scelti da un menu nella **prima riga delle Impostazioni** (l'ingranaggio): con **classico** l'immagine è a sinistra e le informazioni a destra; con **centrato** l'immagine del rifiuto è grande al centro in alto e le informazioni stanno sotto.
+
+| | Classico | Centrato |
+|---|---|---|
+| **Chiaro** | ![Classico chiaro](example/layout/garbage-classico-light.png) | ![Centrato chiaro](example/layout/garbage-centrato-light.png) |
+| **Scuro** | ![Classico scuro](example/layout/garbage-classico-dark.png) | ![Centrato scuro](example/layout/garbage-centrato-dark.png) |
+
+**La riga "Layout" è la prima delle Impostazioni:**
+
+| Chiaro | Scuro |
+|---|---|
+| ![Layout nelle impostazioni, chiaro](example/layout/impostazioni-layout-light.png) | ![Layout nelle impostazioni, scuro](example/layout/impostazioni-layout-dark.png) |
+
+**Come si attiva:**
+
+1. Il package [`packages/differenziata.yaml`](packages/differenziata.yaml) crea già il menu `input_select.layout_garbage` (con *Classico* e *Centrato*).
+2. Nella configurazione della card aggiungi `layout_entity: input_select.layout_garbage`.
+3. Metti la riga del layout come **prima** delle impostazioni (vedi gli esempi qui sotto).
+
+Se non vuoi il menu, puoi fissare il layout con `layout: centrato` (oppure `classico`, il predefinito).
+
 ## Installazione
 
 1. **Card**: in HA vai su Impostazioni → Dashboard → Risorse, e aggiungi il file [`dm-garbage-card.js`](dm-garbage-card.js) come risorsa JS. Il modo più semplice: copialo in `/config/www/dm-garbage-card.js` e aggiungi la risorsa `/local/dm-garbage-card.js` di tipo "Modulo JavaScript". Non serve nessuna dipendenza HACS: il file è autoconsistente.
@@ -44,6 +67,7 @@ Questa card fa parte della stessa famiglia grafica "DashboardModern" delle mie a
 6. **Configura la card** nel tuo dashboard (modalità YAML):
    ```yaml
    type: custom:dm-garbage-card
+   layout_entity: input_select.layout_garbage
    entity: sensor.raccoltadifferenziata
    weekday_entity: sensor.giornosettimana
    pickup_day_entity: sensor.giornoritiro
@@ -56,6 +80,10 @@ Questa card fa parte della stessa famiglia grafica "DashboardModern" delle mie a
      "Organico e Resto": /local/rifiuti/organicoeresto.png
      Nulla: /local/rifiuti/nulla.png
    settings_sections:
+     - title: Aspetto
+       rows:
+         - entity: input_select.layout_garbage
+           label: Layout
      - title: Giorni raccolta
        rows:
          - entity: input_select.raccolta_differenziata_lun
@@ -94,6 +122,10 @@ legacy_settings_popup:
     content:
       type: entities
       entities:
+        - entity: input_select.layout_garbage      # la riga Layout per prima
+          name: Layout
+          icon: mdi:view-dashboard-outline
+        - type: divider
         - entity: input_select.raccolta_differenziata_lun
         # ... gli altri 6 giorni
 ```
@@ -104,11 +136,12 @@ legacy_settings_popup:
 - `packages/differenziata.yaml` — helper, sensori e automazioni della raccolta differenziata
 - `packages/centro_notifiche_alexa.yaml` — script condiviso per gli annunci vocali Alexa (volume/ritardo/orario)
 - `www/rifiuti/` — le immagini di default dei rifiuti (ritagliate e ottimizzate)
-- `example/` — screenshot di questo README
+- `example/` — screenshot di questo README (in `example/layout/` quelli dei due layout)
 
 ## Changelog
 
-- **18/09/2026**: riscrittura completa. Nuova card in stile DashboardModern (era una card `entities` + `button-card` via HACS); package pulito, niente più impostazioni Alexa duplicate (ora condivise via `centro_notifiche_alexa.yaml`, stesso meccanismo delle altre mie card); immagini dei rifiuti ritagliate sul soggetto e rese più nitide.
+- **21/09/2026**: nuova scelta del **layout classico o centrato** dalla prima riga delle Impostazioni (menu `input_select.layout_garbage`, parametro `layout_entity`); le righe `input_select` del popup nativo sono ora un vero menu a tendina.
+- **18/09/2026**: riscrittura completa. Nuova card personalizzata (era una card `entities` + `button-card` via HACS); package pulito, niente più impostazioni Alexa duplicate (ora condivise via `centro_notifiche_alexa.yaml`, stesso meccanismo delle altre mie card); immagini dei rifiuti ritagliate sul soggetto e rese più nitide.
 
 ## ☕ Vuoi darmi una mano?
 

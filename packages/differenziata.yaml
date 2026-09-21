@@ -91,6 +91,14 @@ input_datetime:
 # SELECT #
 ##########
 input_select:
+  # Layout della card: classico (immagine a sinistra) oppure centrato (immagine grande in alto).
+  layout_garbage:
+    name: Layout Raccolta Differenziata
+    icon: mdi:view-dashboard-outline
+    options:
+      - Classico
+      - Centrato
+
   # I giorni sono volutamente "sfasati" di uno: raccolta_differenziata_lun
   # indica il rifiuto ritirato MARTEDÌ (il giorno dopo), perché la card lo
   # usa per dire "stanotte esci il bidone per il ritiro di domani".
