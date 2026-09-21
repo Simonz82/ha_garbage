@@ -5,6 +5,9 @@
 // in cui esporre i bidoni. Si puo' mostrare in due layout (classico / centrato), scelto dalla
 // prima riga delle Impostazioni con `layout_entity`. Autoconsistente: solo questo file.
 //
+// Tipi di raccolta: con `types_entity` (un input_text) compare un pulsante dove scrivi a mano i tipi di
+// rifiuto del tuo comune (Carta, Vetro, ...): il package aggiorna da solo i menu dei giorni.
+//
 // Impostazioni (ingranaggio in alto a destra): di default apre una finestra nativa che elenca
 // le entita' passate in `settings_sections` (nessuna dipendenza extra). Se invece usi gia'
 // browser_mod e preferisci il suo popup, passa `legacy_settings_popup` (vedi README).
@@ -28,6 +31,8 @@ const ICON_MEGAPHONE =
   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h2l3.5 4.5V5.5L6 10H4a1 1 0 0 0-1 1z"/><path d="M13 8a3 3 0 0 1 0 8"/><path d="M16 5.5a6.5 6.5 0 0 1 0 13"/></svg>';
 
 // Icone per le righe "gruppo" del dialog Impostazioni (stile vecchia card).
+const ICON_TYPES =
+  '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="8" y1="18" x2="14" y2="18"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/><path d="M17 20l4-4 1 1-4 4h-1z"/></svg>';
 const STYLE = `
 :host{display:block;--dm-blue:#0ea5e9;--dm-blue-deep:#0369a1;--dm-dim:var(--secondary-text-color,#64748b);--dm-card:var(--card-background-color,#ffffff);--dm-border:var(--divider-color,#e6ecf4);--dm-soft:rgba(148,163,184,.10);--dm-text:var(--primary-text-color,#0f172a)}
 .dm-ap-card{position:relative;display:flex;flex-direction:column;border:1px solid var(--dm-border);border-radius:22px;background:var(--dm-card);box-shadow:0 12px 30px rgba(15,23,42,.06);overflow:hidden}
@@ -48,6 +53,7 @@ const STYLE = `
 .dm-ap-dot{width:7px;height:7px;border-radius:50%;background:currentColor}
 .dm-ap-tools{display:flex;gap:4px;flex:0 0 auto}
 .dm-ap-tool{width:37px;height:37px;display:grid;place-items:center;border:1px solid var(--dm-border);border-radius:11px;background:var(--dm-card);color:var(--dm-dim);cursor:pointer}
+.dm-ap-tool[hidden]{display:none}
 .dm-ap-tool svg{width:19px;height:19px}
 .dm-ap-tool:hover{border-color:#bae6fd;color:var(--dm-blue-deep)}
 .dm-ap-top-row{display:flex;align-items:stretch;gap:10px;margin:0 13px}
@@ -157,6 +163,18 @@ const STYLE = `
 .dm-ap-reset-note{font-size:12px;color:var(--dm-dim);text-align:center;margin-top:4px}
 
 @media (max-width:600px){
+          .dm-ap-tool{width:33px;height:33px}
+}
+
+.dm-gt-help{margin:0 0 10px;font-size:13.5px;line-height:1.45;color:var(--dm-dim)}
+.dm-gt-help b{color:var(--dm-text)}
+.dm-gt-example{margin:0 0 10px;padding:10px 12px;border-radius:13px;background:var(--dm-soft);border-left:3px solid var(--dm-blue);font-size:13px;line-height:1.6;color:var(--dm-dim)}
+.dm-gt-example b{color:var(--dm-text)}
+.dm-gt-input{width:100%;box-sizing:border-box;padding:11px 12px;border-radius:13px;border:1px solid var(--dm-border);background:var(--dm-soft);color:var(--dm-text);font:inherit;font-size:15px;resize:vertical}
+.dm-gt-count{text-align:right;font-size:11px;font-weight:800;color:var(--dm-dim);margin-top:3px}
+.dm-gt-preview{display:flex;flex-wrap:wrap;gap:6px}
+.dm-gt-chip{padding:6px 11px;border-radius:999px;background:var(--dm-soft);border:1px solid var(--dm-border);font-size:13.5px;font-weight:700}
+@media (max-width:600px){
   .dm-ap-overlay{align-items:flex-end;padding:0;backdrop-filter:blur(4px)}
   .dm-ap-dialog{width:100%;max-width:100%;height:94vh;max-height:94vh;border-radius:22px 22px 0 0;display:flex;flex-direction:column}
   .dm-ap-dialog-body{flex:1}
@@ -206,11 +224,13 @@ class DmGarbageCard extends HTMLElement {
           <span class="dm-ap-tools">
             ${alexaBtn}
             <button type="button" class="dm-ap-tool dm-ap-settings" title="Impostazioni">${ICON_GEAR}</button>
+            <button type="button" class="dm-ap-tool dm-ap-types" title="Tipi di raccolta" hidden>${ICON_TYPES}</button>
           </span>
         </div>
         <div class="dm-ap-top-row" style="padding-bottom:10px">
           <div class="dm-ap-hero" style="display:flex;align-items:center;justify-content:center;overflow:visible">
             <img class="dm-c-garbage-img" style="width:100%;height:100%;object-fit:contain;transform:scale(0.95) translateY(-5px)" alt="">
+            <div class="dm-c-garbage-emoji" style="display:none;font-size:92px;line-height:1"></div>
           </div>
           <div class="dm-ap-cycle-side">
             <span class="dm-ap-cycle-cap">Info</span>
@@ -234,6 +254,14 @@ class DmGarbageCard extends HTMLElement {
         this._openSettings();
       }
     });
+    const typesBtn = this._root.querySelector(".dm-ap-types");
+    if (this._config.types_entity) {
+      typesBtn.hidden = false;
+      typesBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this._openTypes();
+      });
+    }
     const alexaEl = this._root.querySelector(".dm-ap-alexa");
     if (alexaEl) {
       alexaEl.addEventListener("click", (e) => {
@@ -360,6 +388,84 @@ class DmGarbageCard extends HTMLElement {
     });
   }
 
+  // Elenco dei tipi di raccolta scritto a mano: viene salvato in un input_text e un'automazione del
+  // package ricostruisce i menu dei giorni (icona automatica per ogni nome, "Nulla" sempre in fondo).
+  _parseTypes(text) {
+    const MAP = { "organico e resto": "\u{1F52A}", organico: "\u{1F34C}", umido: "\u{1F34C}", indifferenziato: "\u267B", secco: "\u267B", residuo: "\u267B", carta: "\u{1F961}", cartone: "\u{1F961}", vetro: "\u{1F376}", plastica: "\u{1F95B}", lattine: "\u{1F96B}", metalli: "\u{1F96B}", verde: "\u{1F33F}", sfalci: "\u{1F33F}", ingombranti: "\u{1F6CB}", pile: "\u{1F50B}", farmaci: "\u{1F48A}", tessili: "\u{1F455}", oli: "\u{1F6E2}" };
+    const out = [];
+    String(text || "")
+      .split(/[,;\n|]/)
+      .map((t) => t.trim())
+      .filter((t) => t && t.replace(/^[^A-Za-z\u00C0-\u00FF0-9]+/, "").toLowerCase() !== "nulla")
+      .forEach((t) => {
+        let item = t;
+        if (/^[A-Za-z\u00C0-\u00FF0-9]/.test(t)) {
+          const low = t.toLowerCase();
+          let emoji = "\u{1F5D1}";
+          let n = 0;
+          Object.keys(MAP).forEach((k) => {
+            if (low.includes(k) && k.length > n) {
+              emoji = MAP[k];
+              n = k.length;
+            }
+          });
+          item = `${emoji} ${t[0].toUpperCase()}${t.slice(1)}`;
+        }
+        if (!out.includes(item)) out.push(item);
+      });
+    return out;
+  }
+
+  _openTypes() {
+    const hass = this._hass;
+    const ent = this._config.types_entity;
+    const st = hass.states[ent];
+    const val = st && !["unknown", "unavailable"].includes(st.state) ? st.state : "";
+    const overlay = this._openDialog(
+      "Tipi di raccolta",
+      `<div class="dm-ap-sec">
+        <div class="dm-ap-sec-cap">Configura la raccolta del tuo comune</div>
+        <p class="dm-gt-help">Scrivi le <b>voci</b> dei rifiuti, separate da virgola. <b>Ogni voce è ciò che viene ritirato in una singola giornata</b>: quando poi imposti i giorni, per ogni giorno scegli <b>una sola voce</b>. Se in un giorno fanno <b>due ritiri insieme</b>, scrivi una voce apposta che li comprende entrambi.</p>
+        <div class="dm-gt-example"><b>Esempio</b><br>Scrivi: <i>Carta, Vetro, Plastica, Organico, Organico e Resto</i><br>• il lunedì scegli <b>Organico</b> (ritirano solo l'organico)<br>• il giovedì scegli <b>Organico e Resto</b> (quel giorno ritirano organico e resto insieme)<br>• il sabato scegli <b>Nulla</b> (nessun ritiro, viene aggiunta da sola)</div>
+        <p class="dm-gt-help" style="margin-top:8px">A ogni voce viene aggiunta un'icona in automatico. Le scelte già fatte per i giorni restano, se la voce esiste ancora.</p>
+        <textarea class="dm-gt-input" rows="3" maxlength="255" placeholder="Carta, Vetro, Plastica, Organico, Organico e Resto">${esc(val)}</textarea>
+        <div class="dm-gt-count"></div>
+        <div class="dm-ap-sec-cap" style="margin-top:12px">Anteprima dei menu</div>
+        <div class="dm-gt-preview"></div>
+        <button type="button" class="dm-ap-reset-btn dm-gt-save" style="margin-top:12px">Salva elenco</button>
+        <div class="dm-ap-reset-note dm-gt-msg"></div>
+      </div>`,
+    );
+    overlay.querySelector(".dm-ap-dialog").style.maxHeight = "min(92vh, 900px)";
+    const input = overlay.querySelector(".dm-gt-input");
+    const draw = () => {
+      const items = this._parseTypes(input.value).concat(["\u{1F937} Nulla"]);
+      overlay.querySelector(".dm-gt-preview").innerHTML = items.map((i) => `<span class="dm-gt-chip">${esc(i)}</span>`).join("");
+      overlay.querySelector(".dm-gt-count").textContent = `${input.value.length}/255`;
+    };
+    input.addEventListener("input", draw);
+    draw();
+    overlay.querySelector(".dm-gt-save").addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const msg = overlay.querySelector(".dm-gt-msg");
+      if (!this._parseTypes(input.value).length) {
+        msg.textContent = "Scrivi almeno un tipo di raccolta.";
+        return;
+      }
+      try {
+        await hass.callService("input_text", "set_value", { entity_id: ent, value: input.value.trim() });
+        try {
+          await hass.connection.sendMessagePromise({ type: "fire_event", event_type: "raccolta_tipi_aggiorna" });
+        } catch (err) {
+          /* l'automazione parte comunque al cambio dell'elenco */
+        }
+        msg.textContent = "Salvato: i menu dei giorni sono stati aggiornati.";
+      } catch (err) {
+        msg.textContent = "Non sono riuscito a salvare l'elenco.";
+      }
+    });
+  }
+
   set hass(hass) {
     this._hass = hass;
     if (!this._config) return;
@@ -376,7 +482,15 @@ class DmGarbageCard extends HTMLElement {
     this._root.querySelector(".dm-ap-badge-label").textContent = state || "N/D";
 
     const img = this._root.querySelector(".dm-c-garbage-img");
-    const imgUrl = (cfg.state_images || {})[state] || (cfg.state_images || {}).Nulla || "";
+    // Un tipo scritto a mano puo' non avere una foto: allora si mostra la sua icona grande.
+    const own = (cfg.state_images || {})[state];
+    const emojiEl = this._root.querySelector(".dm-c-garbage-emoji");
+    const emoji = st?.attributes?.emoji;
+    const useEmoji = !own && !nothingDue && !!emoji;
+    emojiEl.style.display = useEmoji ? "block" : "none";
+    emojiEl.textContent = useEmoji ? emoji : "";
+    img.style.display = useEmoji ? "none" : "";
+    const imgUrl = own || (cfg.state_images || {}).Nulla || "";
     if (img.getAttribute("data-src") !== imgUrl) {
       img.src = imgUrl;
       img.setAttribute("data-src", imgUrl);
@@ -398,7 +512,6 @@ class DmGarbageCard extends HTMLElement {
     return 5;
   }
 }
-
 
 customElements.define("dm-garbage-card", DmGarbageCard);
 window.customCards = window.customCards || [];

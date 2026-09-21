@@ -12,9 +12,13 @@ Questa card fa parte delle mie card pubbliche per Home Assistant (elettrodomesti
 
 ![Card raccolta differenziata](example/card-vista-principale.png)
 
-**Pulsante ingranaggio → impostazioni giorni:**
+**Pulsante ingranaggio → impostazioni giorni** (prima riga: Layout):
 
-![Popup impostazioni giorni](example/popup-impostazioni-giorni.png)
+| Chiaro | Scuro |
+|---|---|
+| ![Impostazioni, chiaro](example/impostazioni-light.png) | ![Impostazioni, scuro](example/impostazioni-dark.png) |
+
+**Ultimo pulsante → Tipi di raccolta** (scrivi a mano i tipi di rifiuto del tuo comune): vedi la sezione più sotto.
 
 **Pulsante megafono (opzionale) → tua pagina notifiche Alexa condivisa:**
 
@@ -25,7 +29,56 @@ Questa card fa parte delle mie card pubbliche per Home Assistant (elettrodomesti
 - Ogni giorno la card mostra l'immagine del rifiuto che va buttato **oggi** (bidone/sacco corrispondente), il giorno della settimana e il giorno del ritiro di domani.
 - Un'automazione attiva un promemoria in una finestra oraria configurabile: finché è attivo, ogni tot minuti (a scelta) manda una notifica push e fa annunciare ad Alexa cosa buttare — a meno che oggi non ci sia nulla da buttare.
 - L'ingranaggio in alto a destra apre le impostazioni per assegnare un rifiuto ad ogni giorno della settimana.
+- Il pulsante **Tipi di raccolta** (l'ultimo a destra) serve a scrivere a mano i tipi di rifiuto del **tuo** comune (Carta, Vetro, Organico e Resto, …): l'elenco non è fisso, vedi la sezione dedicata.
 - Il megafono (opzionale) è pensato per chi vuole centralizzare in un'unica pagina le impostazioni di volume/orario degli annunci Alexa condivise fra più card (vedi sezione "Notifiche Alexa condivise" più sotto) — se non ti serve, semplicemente non lo configuri e non compare.
+
+## 🗂️ Configura i tipi di raccolta del tuo comune
+
+Ogni comune raccoglie cose diverse: c'è chi ha "Umido" e "Secco", chi "Organico e Resto", chi anche "Ingombranti" o "Pile". Per questo l'elenco dei rifiuti **non è fisso**: lo scrivi tu, direttamente dalla card, con il pulsante **Tipi di raccolta** (l'ultimo a destra, dopo l'ingranaggio).
+
+| Chiaro | Scuro |
+|---|---|
+| ![Tipi di raccolta, chiaro](example/tipi-di-raccolta-light.png) | ![Tipi di raccolta, scuro](example/tipi-di-raccolta-dark.png) |
+
+**Come si usa**
+
+1. Tocca **Tipi di raccolta** e scrivi le voci separate da **virgola** (vanno bene anche `;` o un a capo).
+2. Sotto vedi subito l'**anteprima** dei menu che verranno creati. Premi **Salva elenco**.
+3. Da quel momento i 7 menu dei giorni (nelle **Impostazioni**, l'ingranaggio) contengono le tue voci.
+
+**Come ragionare (importante)**
+
+> **Ogni voce è ciò che viene ritirato in una singola giornata.** Quando poi imposti i giorni, per ogni giorno scegli **una sola voce**. Se in un giorno fanno **due ritiri insieme**, scrivi una **voce apposta** che li comprende entrambi.
+
+**Esempio**
+
+Scrivi: `Carta, Vetro, Plastica, Organico, Organico e Resto`
+
+- il **lunedì** scegli **Organico** → quel giorno ritirano solo l'organico;
+- il **giovedì** scegli **Organico e Resto** → quel giorno ritirano organico e resto insieme (due ritiri, una voce);
+- il **sabato** scegli **Nulla** → nessun ritiro. **"Nulla" viene aggiunta da sola**, non devi scriverla.
+
+**Cosa succede da solo**
+
+- A ogni voce viene aggiunta un'**icona** (carta 🥡, vetro 🍶, plastica 🥛, organico 🍌, indifferenziato ♻, ingombranti 🛋, pile 🔋, sfalci 🌿 …; se la parola non è nota viene messo un cestino 🗑). Se la voce comincia già con un'emoji, viene lasciata com'è.
+- **Le scelte già fatte per i giorni restano**, se la voce esiste ancora nel nuovo elenco (altrimenti quel giorno passa a "Nulla").
+- La scelta di ogni giorno viene **salvata al sicuro** (`input_text.raccolta_giorno_lun` … `dom`): sopravvive ai riavvii di Home Assistant.
+- L'immagine della card: per i tipi che hanno una foto (`state_images`) si vede quella; per un tipo **senza foto** compare la sua **icona in grande**.
+- Notifica push e annuncio vocale usano la stessa voce ("Oggi si butta *Organico e Resto*").
+
+**Cosa serve**: il package [`packages/differenziata.yaml`](packages/differenziata.yaml) (crea `input_text.raccolta_tipi_elenco`, i 7 `input_text` di appoggio e le due automazioni) e, nella configurazione della card, una riga in più:
+
+```yaml
+types_entity: input_text.raccolta_tipi_elenco
+```
+
+Senza `types_entity` il pulsante non compare e i menu restano quelli del package (Indifferenziato, Organico, Organico e Resto, Carta, Vetro, Plastica, Nulla). Se `raccolta_tipi_elenco` è vuoto si usa quell'elenco di esempio.
+
+**Su smartphone**
+
+| Tipi di raccolta | Impostazioni giorni |
+|---|---|
+| ![Mobile tipi](example/tipi-di-raccolta-mobile-dark.png) | ![Mobile impostazioni](example/impostazioni-mobile-dark.png) |
 
 ## 🎛️ Layout classico o centrato
 
@@ -68,6 +121,7 @@ Se non vuoi il menu, puoi fissare il layout con `layout: centrato` (oppure `clas
    ```yaml
    type: custom:dm-garbage-card
    layout_entity: input_select.layout_garbage
+   types_entity: input_text.raccolta_tipi_elenco   # pulsante "Tipi di raccolta"
    entity: sensor.raccoltadifferenziata
    weekday_entity: sensor.giornosettimana
    pickup_day_entity: sensor.giornoritiro
@@ -140,6 +194,7 @@ legacy_settings_popup:
 
 ## Changelog
 
+- **21/09/2026 (sera)**: nuovo pulsante **Tipi di raccolta** per scrivere a mano i tipi di rifiuto del proprio comune (parametro `types_entity`, nuovi `input_text` e 2 automazioni nel package: icona automatica, "Nulla" sempre in fondo, scelte dei giorni salvate e mantenute); il sensore `sensor.raccoltadifferenziata` non dipende più dal taglio dei primi 2 caratteri (toglie da solo l'emoji) e ha gli attributi `completo` ed `emoji`; per i tipi senza foto la card mostra l'icona in grande; impostazioni dei giorni nella finestra nativa con la riga Layout; tutte le schermate rifatte.
 - **21/09/2026**: nuova scelta del **layout classico o centrato** dalla prima riga delle Impostazioni (menu `input_select.layout_garbage`, parametro `layout_entity`); le righe `input_select` del popup nativo sono ora un vero menu a tendina.
 - **18/09/2026**: riscrittura completa. Nuova card personalizzata (era una card `entities` + `button-card` via HACS); package pulito, niente più impostazioni Alexa duplicate (ora condivise via `centro_notifiche_alexa.yaml`, stesso meccanismo delle altre mie card); immagini dei rifiuti ritagliate sul soggetto e rese più nitide.
 

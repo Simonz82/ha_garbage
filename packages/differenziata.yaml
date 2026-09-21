@@ -87,6 +87,29 @@ input_datetime:
     icon: mdi:timer-off
     initial: "23:00:00"
 
+########
+# TEXT #
+########
+# L'elenco dei tipi di raccolta del tuo comune lo scrivi tu (dal pulsante "Tipi di raccolta"
+# sulla card): nomi separati da virgola, per esempio  Carta, Vetro, Plastica, Organico, Indifferenziato
+# ("Nulla" = nessun ritiro viene aggiunto da solo). Se e' vuoto si usa l'elenco di esempio qui sotto.
+# NON mettere "initial": un initial cancellerebbe la tua scelta a ogni riavvio.
+input_text:
+  raccolta_tipi_elenco:
+    name: Tipi di raccolta del comune
+    icon: mdi:format-list-bulleted
+    max: 255
+
+  # Copia "al sicuro" della scelta di ogni giorno: un input_select con opzioni cambiate da
+  # automazione perde la scelta al riavvio, il testo invece sopravvive e la riscrive.
+  raccolta_giorno_lun: {name: Scelta raccolta lun, max: 100}
+  raccolta_giorno_mar: {name: Scelta raccolta mar, max: 100}
+  raccolta_giorno_mer: {name: Scelta raccolta mer, max: 100}
+  raccolta_giorno_gio: {name: Scelta raccolta gio, max: 100}
+  raccolta_giorno_ven: {name: Scelta raccolta ven, max: 100}
+  raccolta_giorno_sab: {name: Scelta raccolta sab, max: 100}
+  raccolta_giorno_dom: {name: Scelta raccolta dom, max: 100}
+
 ##########
 # SELECT #
 ##########
@@ -144,9 +167,24 @@ template:
           mdi:{{ ['emoticon-dead-outline','emoticon-angry-outline','emoticon-sad-outline','emoticon-neutral-outline','emoticon-cool-outline','emoticon-excited-outline','emoticon-happy-outline'][now().weekday()] }}
 
       # 2) RaccoltaDifferenziata -> sensor.raccoltadifferenziata (il rifiuto di OGGI, usato dalla card)
+      # Stato = nome del rifiuto senza emoji. La scelta vera e' quella salvata in
+      # input_text.raccolta_giorno_* (sopravvive al riavvio), con il menu come ripiego.
       - name: RaccoltaDifferenziata
         state: >-
-          {{ states("input_select.raccolta_differenziata_" + states('sensor.giorno_della_settimana'))[2:] }}
+          {% set wd = states('sensor.giorno_della_settimana') %}
+          {% set t = states('input_text.raccolta_giorno_' ~ wd) %}
+          {% set raw = t if t not in ['', 'unknown', 'unavailable'] else states('input_select.raccolta_differenziata_' ~ wd) %}
+          {{ raw | regex_replace('^[\\W_]+', '') }}
+        attributes:
+          completo: >-
+            {% set wd = states('sensor.giorno_della_settimana') %}
+            {% set t = states('input_text.raccolta_giorno_' ~ wd) %}
+            {{ t if t not in ['', 'unknown', 'unavailable'] else states('input_select.raccolta_differenziata_' ~ wd) }}
+          emoji: >-
+            {% set wd = states('sensor.giorno_della_settimana') %}
+            {% set t = states('input_text.raccolta_giorno_' ~ wd) %}
+            {% set raw = t if t not in ['', 'unknown', 'unavailable'] else states('input_select.raccolta_differenziata_' ~ wd) %}
+            {{ raw | replace(raw | regex_replace('^[\\W_]+', ''), '') | trim }}
 
       # 3) GiornoSettimana -> sensor.giornosettimana (es. "Lunedì", usato dalla card)
       - name: GiornoSettimana
@@ -222,7 +260,7 @@ automation:
         before: input_datetime.raccolta_differenziata_notifiche_end_time
       - condition: template
         value_template: >
-          {{ states('input_select.raccolta_differenziata_' + states('sensor.giorno_della_settimana'))[2:] != 'Nulla' }}
+          {{ states('sensor.raccoltadifferenziata') != 'Nulla' }}
 
     action:
       - service: notify.raccolta_differenziata_gruppo_notifiche_app
@@ -230,14 +268,14 @@ automation:
         data:
           title: "🚮 Ricordati di buttare l'immondizia"
           message: >-
-            {{ states("input_select.raccolta_differenziata_" + states('sensor.giorno_della_settimana')) }}
+            {{ state_attr('sensor.raccoltadifferenziata', 'completo') }}
 
       # Annuncio vocale su Alexa - usa il dispositivo/volumi/ritardo di
       # default dello script condiviso (packages/centro_notifiche_alexa.yaml).
       - service: script.notifica_vocale_alexa
         data:
           messaggio: >-
-            Ricordati di buttare l'immondizia. Oggi si butta {{ states("input_select.raccolta_differenziata_" + states('sensor.giorno_della_settimana'))[2:] }}.
+            Ricordati di buttare l'immondizia. Oggi si butta {{ states('sensor.raccoltadifferenziata') }}.
 
   # Annuncio vocale di TEST: crea da UI un helper booleano chiamato
   # input_boolean.test_notifica (Impostazioni > Dispositivi e servizi >
@@ -254,7 +292,110 @@ automation:
       - service: script.notifica_vocale_alexa
         data:
           messaggio: >-
-            Ricordati di buttare l'immondizia. Oggi si butta {{ states("input_select.raccolta_differenziata_" + states('sensor.giorno_della_settimana'))[2:] }}.
+            Ricordati di buttare l'immondizia. Oggi si butta {{ states('sensor.raccoltadifferenziata') }}.
       - service: input_boolean.turn_off
         target:
           entity_id: input_boolean.test_notifica
+
+  # ---- Tipi di raccolta scritti a mano ----------------------------------------------
+  # Ricostruisce i 7 menu dei giorni partendo dall'elenco scritto in input_text.raccolta_tipi_elenco.
+  # A ogni nome aggiunge da solo un'emoji (carta, vetro, plastica, organico...; se non la conosce
+  # mette un cestino) e in fondo "Nulla". La scelta gia' fatta per ogni giorno viene mantenuta.
+  - alias: "Raccolta differenziata: aggiorna elenco tipi"
+    id: raccolta_differenziata_aggiorna_tipi
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: input_text.raccolta_tipi_elenco
+      - trigger: homeassistant
+        event: start
+      - trigger: event
+        event_type: raccolta_tipi_aggiorna
+    actions:
+      # All'avvio si aspetta che gli helper siano pronti.
+      - if:
+          - condition: template
+            value_template: "{{ trigger.platform == 'homeassistant' }}"
+        then:
+          - delay: "00:00:30"
+      - variables:
+          tipi: >-
+            {% set grezzo = states('input_text.raccolta_tipi_elenco') %}
+            {% set grezzo = grezzo if grezzo not in ['', 'unknown', 'unavailable'] else 'Indifferenziato, Organico, Organico e Resto, Carta, Vetro, Plastica' %}
+            {% set mappa = {'indifferenziato': '♻', 'secco': '♻', 'residuo': '♻', 'organico e resto': '🔪', 'organico': '🍌', 'umido': '🍌', 'carta': '🥡', 'cartone': '🥡', 'vetro': '🍶', 'plastica': '🥛', 'lattine': '🥫', 'metalli': '🥫', 'verde': '🌿', 'sfalci': '🌿', 'ingombranti': '🛋', 'pile': '🔋', 'farmaci': '💊', 'tessili': '👕', 'oli': '🛢'} %}
+            {% set ns = namespace(out=[]) %}
+            {% for t in (grezzo | replace(';', ',') | replace('\n', ',') | replace('|', ',')).split(',') %}
+              {% set t = t | trim %}
+              {% if t != '' and (t | regex_replace('^[\\W_]+', '') | lower) != 'nulla' %}
+                {% if t[0] | regex_match('[A-Za-zÀ-ÿ0-9]') %}
+                  {% set low = t | lower %}
+                  {% set e = namespace(v='🗑', n=0) %}
+                  {% for k, v in mappa.items() %}
+                    {% if k in low and k | length > e.n %}{% set e.v = v %}{% set e.n = k | length %}{% endif %}
+                  {% endfor %}
+                  {% set voce = e.v ~ ' ' ~ (t[0] | upper) ~ t[1:] %}
+                {% else %}
+                  {% set voce = t %}
+                {% endif %}
+                {% if voce not in ns.out %}{% set ns.out = ns.out + [voce] %}{% endif %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.out + ['🤷 Nulla'] }}
+      - repeat:
+          for_each: [lun, mar, mer, gio, ven, sab, dom]
+          sequence:
+            - variables:
+                salvato: "{{ states('input_text.raccolta_giorno_' ~ repeat.item) }}"
+                corrente: "{{ states('input_select.raccolta_differenziata_' ~ repeat.item) }}"
+                voleva: >-
+                  {{ salvato if salvato not in ['', 'unknown', 'unavailable'] else corrente }}
+                nome: "{{ voleva | regex_replace('^[\\W_]+', '') | lower }}"
+                scelta: >-
+                  {% set ns = namespace(v=tipi[-1]) %}
+                  {% for o in tipi %}
+                    {% if (o | regex_replace('^[\\W_]+', '') | lower) == nome %}{% set ns.v = o %}{% endif %}
+                  {% endfor %}
+                  {{ ns.v }}
+            - action: input_select.set_options
+              target:
+                entity_id: "input_select.raccolta_differenziata_{{ repeat.item }}"
+              data:
+                options: "{{ tipi }}"
+            - action: input_select.select_option
+              target:
+                entity_id: "input_select.raccolta_differenziata_{{ repeat.item }}"
+              data:
+                option: "{{ scelta }}"
+            - action: input_text.set_value
+              target:
+                entity_id: "input_text.raccolta_giorno_{{ repeat.item }}"
+              data:
+                value: "{{ scelta }}"
+
+  # Quando scegli tu un tipo dal menu di un giorno, lo salva (le modifiche fatte dall'automazione
+  # qui sopra non hanno un utente e vengono ignorate).
+  - alias: "Raccolta differenziata: salva scelta giorno"
+    id: raccolta_differenziata_salva_scelta_giorno
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id:
+          - input_select.raccolta_differenziata_lun
+          - input_select.raccolta_differenziata_mar
+          - input_select.raccolta_differenziata_mer
+          - input_select.raccolta_differenziata_gio
+          - input_select.raccolta_differenziata_ven
+          - input_select.raccolta_differenziata_sab
+          - input_select.raccolta_differenziata_dom
+    conditions:
+      - condition: template
+        value_template: >-
+          {{ trigger.to_state.context.user_id is not none
+             and trigger.from_state is not none
+             and trigger.from_state.state != trigger.to_state.state }}
+    actions:
+      - action: input_text.set_value
+        target:
+          entity_id: "input_text.raccolta_giorno_{{ trigger.entity_id.split('_')[-1] }}"
+        data:
+          value: "{{ trigger.to_state.state }}"
