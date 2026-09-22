@@ -1,5 +1,7 @@
 # ♻️ Raccolta Differenziata per Home Assistant
 
+> 📦 **Questo progetto è confluito in [smart-home-cards](https://github.com/Simonz82/smart-home-cards)**, il repository unico che raccoglie tutte le mie card per Home Assistant (elettrodomestici, energia, FritzBox, server HA, NAS, Proxmox, UPS, raccolta differenziata). Se stai installando da zero, usa quello — questo repo resta online per chi lo aveva già installato, ma non riceverà più novità qui.
+
 Card e package per Home Assistant che gestiscono i giorni della raccolta differenziata: mostra un'immagine diversa in base al rifiuto del giorno, il giorno del ritiro, l'orario in cui esporre i bidoni, e manda un promemoria (notifica push + annuncio vocale su Alexa) finché non lo disattivi.
 
 Progetto storico ripreso da una card più vecchia che avevo condiviso tempo fa (con basi di Saverio Gravagnola e Agostino Pitasi — altri spunti su [domoticamente.it](http://domoticamente.it) e su [scheccia1/hagarbage](https://github.com/scheccia1/hagarbage)). Riscritto da zero il 18/09/2026: nuova card personalizzata (lo stesso stile visivo delle mie altre card pubbliche), package YAML pulito e senza duplicazioni, immagini dei rifiuti ritagliate e rese più nitide.
