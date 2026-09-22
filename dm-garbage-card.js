@@ -8,6 +8,9 @@
 // Tipi di raccolta: con `types_entity` (un input_text) compare un pulsante dove scrivi a mano i tipi di
 // rifiuto del tuo comune (Carta, Vetro, ...): il package aggiorna da solo i menu dei giorni.
 //
+// Tipi di raccolta: con `types_entity` (un input_text) compare un pulsante dove scrivi a mano i tipi di
+// rifiuto del tuo comune (Carta, Vetro, ...): il package aggiorna da solo i menu dei giorni.
+//
 // Impostazioni (ingranaggio in alto a destra): di default apre una finestra nativa che elenca
 // le entita' passate in `settings_sections` (nessuna dipendenza extra). Se invece usi gia'
 // browser_mod e preferisci il suo popup, passa `legacy_settings_popup` (vedi README).
@@ -195,6 +198,161 @@ function applyLayoutChoice(root, cfg, hass) {
   }
   card.classList.toggle("layout-centrato", layout === "centrato");
 }
+
+const DM_EDITOR_STYLE = `
+  :host{display:block;padding:4px 0 12px}
+  .dm-ed-row{margin-bottom:14px}
+  .dm-ed-label{display:block;font-size:13px;font-weight:700;color:var(--primary-text-color);margin-bottom:6px}
+  .dm-ed-hint{font-size:12px;color:var(--secondary-text-color);margin:2px 0 8px;line-height:1.4}
+  .dm-ed-types{display:flex;flex-wrap:wrap;gap:8px}
+  .dm-ed-type-btn{flex:1 1 30%;min-width:100px;border:1px solid var(--divider-color,#e0e0e0);border-radius:12px;background:var(--card-background-color,#fff);color:var(--primary-text-color);padding:10px 8px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:center}
+  .dm-ed-type-btn.on{border-color:var(--primary-color,#03a9f4);background:rgba(3,169,244,.12);color:var(--primary-color,#03a9f4)}
+  .dm-ed-choice{display:flex;gap:8px}
+  .dm-ed-choice-btn{flex:1;border:1px solid var(--divider-color,#e0e0e0);border-radius:12px;background:var(--card-background-color,#fff);color:var(--primary-text-color);padding:12px 10px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:left;line-height:1.35}
+  .dm-ed-choice-btn small{display:block;font-size:11px;font-weight:500;color:var(--secondary-text-color);margin-top:3px}
+  .dm-ed-choice-btn.on{border-color:var(--primary-color,#03a9f4);background:rgba(3,169,244,.12)}
+  .dm-ed-sec{margin:18px 0 10px;padding-top:12px;border-top:1px solid var(--divider-color,#e0e0e0);font-size:11.5px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;color:var(--secondary-text-color)}
+  .dm-ed-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  ha-entity-picker{width:100%}
+  .dm-ed-input{width:100%;box-sizing:border-box;padding:11px 12px;border-radius:10px;border:1px solid var(--divider-color,#e0e0e0);background:var(--card-background-color,#fff);color:var(--primary-text-color);font:inherit;font-size:14px}
+  .dm-ed-input:focus{outline:none;border-color:var(--primary-color,#03a9f4)}
+  details.dm-ed-adv{margin-top:16px}
+  details.dm-ed-adv summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--primary-color,#03a9f4);padding:6px 0}
+  .dm-ed-missing{color:#c62828;font-size:12px;margin-top:4px}
+`;
+
+// -----------------------------------------------------------------------
+// Editor visuale condiviso per le card "a campi fissi" (FritzBox, Server,
+// NAS, Proxmox, UPS, Raccolta Differenziata, Energia Casa): a differenza
+// dell'elettrodomestico non c'e' da scegliere un "tipo", si va dritti ai
+// campi. Ogni card definisce solo il suo elenco (sezioni + campi), il
+// motore che disegna il form ed emette config-changed e' unico.
+// -----------------------------------------------------------------------
+function dmGetPath(obj, path) {
+  return path.split(".").reduce((o, k) => (o != null ? o[k] : undefined), obj);
+}
+
+function dmSetPath(root, path, value) {
+  const keys = path.split(".");
+  let obj = root;
+  for (let i = 0; i < keys.length - 1; i++) {
+    const k = keys[i];
+    const nextIsIndex = /^\d+$/.test(keys[i + 1]);
+    const existing = obj[k];
+    const container = Array.isArray(existing) ? [...existing] : existing && typeof existing === "object" ? { ...existing } : nextIsIndex ? [] : {};
+    obj[k] = container;
+    obj = container;
+  }
+  const lastKey = keys[keys.length - 1];
+  if (value === "" || value === undefined) delete obj[lastKey];
+  else obj[lastKey] = value;
+  return root;
+}
+
+class DmSimpleCardEditorBase extends HTMLElement {
+  // Sottoclassi: implementano get schema() -> [{ title, fields: [{key,label,kind,domain,required,hint}] }]
+  get schema() {
+    return [];
+  }
+
+  setConfig(config) {
+    this._config = { ...config };
+    this._render();
+  }
+
+  set hass(hass) {
+    this._hass = hass;
+    if (this._root) {
+      this._root.querySelectorAll("ha-entity-picker").forEach((el) => {
+        el.hass = hass;
+      });
+    }
+  }
+
+  _emit() {
+    this.dispatchEvent(new CustomEvent("config-changed", { detail: { config: this._config }, bubbles: true, composed: true }));
+  }
+
+  _set(path, value) {
+    this._config = dmSetPath({ ...this._config }, path, value);
+    this._emit();
+  }
+
+  _render() {
+    if (!this._root) {
+      this._root = this.attachShadow({ mode: "open" });
+      this._root.innerHTML = `<style>${DM_EDITOR_STYLE}</style><div class="dm-ed-body"></div>`;
+    }
+    const body = this._root.querySelector(".dm-ed-body");
+    const cfg = this._config;
+    body.innerHTML = this.schema
+      .map(
+        (sec) => `
+      <div class="dm-ed-sec">${esc(sec.title)}</div>
+      ${sec.fields
+        .map((f) => {
+          const val = dmGetPath(cfg, f.key);
+          if (f.kind === "entity" || !f.kind) {
+            return `<div class="dm-ed-row">
+              <span class="dm-ed-label">${esc(f.label)}${f.required ? " — obbligatorio" : ""}</span>
+              ${f.hint ? `<p class="dm-ed-hint">${esc(f.hint)}</p>` : ""}
+              <ha-entity-picker data-key="${esc(f.key)}" ${f.domain ? `include-domains='${JSON.stringify(f.domain)}'` : ""} allow-custom-entity></ha-entity-picker>
+              ${f.required && !val ? `<div class="dm-ed-missing">Serve un'entita' per far funzionare la card.</div>` : ""}
+            </div>`;
+          }
+          return `<div class="dm-ed-row">
+            <span class="dm-ed-label">${esc(f.label)}${f.required ? " — obbligatorio" : ""}</span>
+            ${f.hint ? `<p class="dm-ed-hint">${esc(f.hint)}</p>` : ""}
+            <input class="dm-ed-input" data-key="${esc(f.key)}" type="${f.kind === "number" ? "number" : "text"}" placeholder="${esc(f.placeholder || "")}">
+          </div>`;
+        })
+        .join("")}
+    `,
+      )
+      .join("");
+
+    body.querySelectorAll("ha-entity-picker[data-key]").forEach((el) => {
+      el.hass = this._hass;
+      el.value = dmGetPath(cfg, el.dataset.key) || "";
+      el.addEventListener("value-changed", (e) => {
+        e.stopPropagation();
+        this._set(el.dataset.key, e.detail.value);
+      });
+    });
+    body.querySelectorAll("input.dm-ed-input[data-key]").forEach((el) => {
+      const v = dmGetPath(cfg, el.dataset.key);
+      el.value = v ?? "";
+      el.addEventListener("change", () => {
+        this._set(el.dataset.key, el.type === "number" ? Number(el.value) : el.value);
+      });
+    });
+  }
+}
+
+class DmGarbageCardEditor extends DmSimpleCardEditorBase {
+  get schema() {
+    return [
+      { title: "Base", fields: [
+        { key: "name", label: "Nome", kind: "text", placeholder: "Raccolta Differenziata" },
+        { key: "entity", label: "Sensore del rifiuto di oggi", domain: ["sensor"], required: true },
+      ]},
+      { title: "Giorni e orari", fields: [
+        { key: "weekday_entity", label: "Giorno della settimana", domain: ["sensor"] },
+        { key: "pickup_day_entity", label: "Giorno del ritiro", domain: ["sensor"] },
+        { key: "expose_time_entity", label: "Orario di esposizione", domain: ["input_datetime"] },
+      ]},
+      { title: "Tipi di raccolta scritti a mano", fields: [
+        { key: "types_entity", label: "Elenco tipi di raccolta (mostra il pulsante sulla card)", domain: ["input_text"], hint: "Facoltativo: se lo colleghi compare il pulsante per scrivere i tipi di raccolta del tuo comune." },
+      ]},
+      { title: "Avanzate", fields: [
+        { key: "alexa_settings_path", label: "Percorso pagina notifiche Alexa (facoltativo)", kind: "text", placeholder: "/lovelace/notifiche-alexa" },
+        { key: "layout_entity", label: "Menu layout (classico/centrato)", domain: ["input_select"] },
+      ]},
+    ];
+  }
+}
+customElements.define("dm-garbage-card-editor", DmGarbageCardEditor);
+
 
 class DmGarbageCard extends HTMLElement {
   setConfig(config) {
@@ -510,6 +668,17 @@ class DmGarbageCard extends HTMLElement {
 
   getCardSize() {
     return 5;
+  }
+
+  static getConfigElement() {
+    return document.createElement("dm-garbage-card-editor");
+  }
+
+  static getStubConfig(hass) {
+    return {
+      name: "Raccolta Differenziata",
+      artwork: "garbage",
+    };
   }
 }
 
