@@ -1,9 +1,8 @@
 # ♻️ Raccolta Differenziata per Home Assistant
 
-> ## 📦 Già disponibile in HACS
-> Questa card fa già parte di **[smart-home-cards](https://github.com/Simonz82/smart-home-cards)**, il repository unico installabile da HACS che raccoglie tutte le mie card per Home Assistant — guida completa (incluso l'editor visuale) direttamente lì, nessun altro repo da aggiungere.
->
-> **Preferisci installare questa card da sola, a mano?** Va benissimo: questa guida resta valida e funzionante, segui pure le istruzioni qui sotto.
+> ## 📌 Sviluppo spostato in smart-home-cards
+> Da ottobre 2026 questa card continua a evolvere in **[smart-home-cards](https://github.com/Simonz82/smart-home-cards)** (installabile da HACS, nome `custom:shc-garbage-card`, guida in [docs/differenziata.md](https://github.com/Simonz82/smart-home-cards/blob/main/docs/differenziata.md)). Nuove funzioni e fix arrivano **prima lì**.
+> Questo repository resta disponibile e funzionante per chi la usa a mano (`custom:dm-garbage-card`, file `dm-garbage-card.js`): nulla cambia per le installazioni esistenti. Se parti da zero, ti consiglio smart-home-cards.
 
 Card e package per Home Assistant che gestiscono i giorni della raccolta differenziata: mostra un'immagine diversa in base al rifiuto del giorno, il giorno del ritiro, l'orario in cui esporre i bidoni, e manda un promemoria (notifica push + annuncio vocale su Alexa) finché non lo disattivi.
 
@@ -166,9 +165,9 @@ Se non vuoi il menu, puoi fissare il layout con `layout: centrato` (oppure `clas
 
 Il package chiama uno script condiviso (`script.notifica_vocale_alexa`, dentro `centro_notifiche_alexa.yaml`) invece di duplicare volume/dispositivo/orario in ogni card: così se hai altre card della stessa famiglia (elettrodomestici, ecc.) tutte condividono le stesse impostazioni Alexa, modificabili in un unico punto. Se vuoi anche tu un pulsante megafono che porti a QUELLA pagina di impostazioni condivise, aggiungi alla configurazione della card:
 ```yaml
-alexa_settings_path: /lovelace/nome-della-tua-vista
+notif_center_path: /lovelace/nome-della-tua-vista
 ```
-sostituendo con il percorso di una tua vista/dashboard che contenga una card `entities` con gli helper di `centro_notifiche_alexa.yaml` (`input_datetime.orario_inizio/fine_notifiche_alexa`, `input_number.volume_alexa_notifica_elettrodomestici`, ecc.). Se non imposti `alexa_settings_path`, il pulsante semplicemente non compare — tutto il resto funziona lo stesso, con l'annuncio Alexa di default su `media_player.alexa_salone`.
+sostituendo con il percorso di una tua vista/dashboard che contenga una card `entities` con gli helper di `centro_notifiche_alexa.yaml` (`input_datetime.orario_inizio/fine_notifiche_alexa`, `input_number.volume_alexa_notifica_elettrodomestici`, ecc.). Se non imposti `notif_center_path` (il vecchio nome `alexa_settings_path` funziona ancora), il pulsante semplicemente non compare — tutto il resto funziona lo stesso, con l'annuncio Alexa di default su `media_player.alexa_salone`.
 
 ### Se usi già browser_mod
 

@@ -367,8 +367,9 @@ class DmGarbageCard extends HTMLElement {
     };
     this._root = this._root || this.attachShadow({ mode: "open" });
     const chip = CHIP_SVGS[this._config.artwork] || CHIP_SVGS.garbage;
-    // Il pulsante megafono compare solo se imposti alexa_settings_path (es. "/lovelace/notifiche-alexa").
-    const alexaBtn = this._config.alexa_settings_path
+    // Il pulsante megafono compare solo se imposti notif_center_path (o il vecchio alexa_settings_path, ancora valido).
+    const notifPath = this._config.notif_center_path || this._config.alexa_settings_path;
+    const alexaBtn = notifPath
       ? `<button type="button" class="dm-ap-tool dm-ap-alexa" title="Notifiche Alexa">${ICON_MEGAPHONE}</button>`
       : "";
     this._root.innerHTML = `<style>${STYLE}</style>
@@ -424,7 +425,7 @@ class DmGarbageCard extends HTMLElement {
     if (alexaEl) {
       alexaEl.addEventListener("click", (e) => {
         e.stopPropagation();
-        history.pushState(null, "", this._config.alexa_settings_path);
+        history.pushState(null, "", this._config.notif_center_path || this._config.alexa_settings_path);
         window.dispatchEvent(new CustomEvent("location-changed", { bubbles: true, composed: true }));
       });
     }
@@ -518,7 +519,8 @@ class DmGarbageCard extends HTMLElement {
          </div>`
       : "";
 
-    const overlay = this._openDialog("Impostazioni", `${sections}${actionsHtml}`);
+    const settingsBody = `${sections}${actionsHtml}`;
+    const overlay = this._openDialog("Impostazioni", settingsBody.trim() ? settingsBody : `<div class="dm-ap-row-val">Nessuna impostazione configurata per questa card (vedi la guida, campo "settings_sections").</div>`);
 
     overlay.querySelectorAll("[data-entity]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
